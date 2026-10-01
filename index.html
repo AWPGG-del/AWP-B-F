@@ -1,1656 +1,1513 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#070707">
-    <meta name="description" content="AWP B-F — Send a message to AWP.">
-    <title>AWP B-F</title>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --bg: #050505;
-            --bg2: #090909;
-            --panel: rgba(15, 15, 15, 0.82);
-            --panel2: rgba(22, 22, 22, 0.72);
-            --border: rgba(255,255,255,.08);
-            --border2: rgba(255,255,255,.16);
-            --text: #fff;
-            --muted: #898989;
-            --muted2: #5b5b5b;
-            --green: #55e69a;
-            --red: #ff5555;
-            --shadow: 0 30px 100px rgba(0,0,0,.55);
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            min-height: 100vh;
-            color: var(--text);
-            background:
-                radial-gradient(circle at 10% 10%, rgba(255,255,255,.055), transparent 25%),
-                radial-gradient(circle at 90% 20%, rgba(255,255,255,.04), transparent 28%),
-                linear-gradient(180deg, #040404, #090909 50%, #040404);
-            font-family:
-                Inter,
-                ui-sans-serif,
-                system-ui,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            opacity: .035;
-            background-image:
-                linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px);
-            background-size: 55px 55px;
-            mask-image: linear-gradient(to bottom, black, transparent);
-        }
-
-        .orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(100px);
-            pointer-events: none;
-            opacity: .12;
-            z-index: -1;
-        }
-
-        .orb.one {
-            width: 320px;
-            height: 320px;
-            background: white;
-            top: 5%;
-            left: -160px;
-            animation: floatOne 9s ease-in-out infinite;
-        }
-
-        .orb.two {
-            width: 280px;
-            height: 280px;
-            background: #aaa;
-            right: -130px;
-            top: 42%;
-            animation: floatTwo 11s ease-in-out infinite;
-        }
-
-        @keyframes floatOne {
-            0%,100% { transform: translate(0,0); }
-            50% { transform: translate(80px,60px); }
-        }
-
-        @keyframes floatTwo {
-            0%,100% { transform: translate(0,0); }
-            50% { transform: translate(-70px,-80px); }
-        }
-
-        .container {
-            width: min(1120px, calc(100% - 36px));
-            margin: auto;
-        }
-
-        /* NAV */
-
-        nav {
-            height: 78px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(255,255,255,.06);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: white;
-            font-weight: 900;
-            letter-spacing: -.04em;
-            font-size: 19px;
-        }
-
-        .brand-logo {
-            width: 38px;
-            height: 38px;
-            display: grid;
-            place-items: center;
-            border: 1px solid var(--border2);
-            border-radius: 12px;
-            background: linear-gradient(145deg, #1c1c1c, #080808);
-            box-shadow: inset 0 1px rgba(255,255,255,.08);
-            font-size: 13px;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .nav-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 15px;
-            border: 1px solid var(--border);
-            border-radius: 11px;
-            color: #ddd;
-            background: rgba(255,255,255,.035);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 700;
-            transition: .2s ease;
-        }
-
-        .nav-btn:hover {
-            border-color: var(--border2);
-            background: rgba(255,255,255,.08);
-            transform: translateY(-1px);
-        }
-
-        .discord-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #7289da;
-            box-shadow: 0 0 12px rgba(114,137,218,.8);
-        }
-
-        /* HERO */
-
-        .hero {
-            text-align: center;
-            padding: 92px 0 54px;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 12px;
-            border: 1px solid var(--border);
-            background: rgba(255,255,255,.035);
-            border-radius: 999px;
-            color: #aaa;
-            font-size: 12px;
-            font-weight: 700;
-            margin-bottom: 24px;
-        }
-
-        .badge-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: white;
-            box-shadow: 0 0 12px white;
-        }
-
-        h1 {
-            font-size: clamp(48px, 8vw, 86px);
-            line-height: .95;
-            letter-spacing: -.07em;
-            font-weight: 950;
-            margin-bottom: 22px;
-        }
-
-        .gradient-text {
-            color: #777;
-            background: linear-gradient(90deg, #fff, #777, #fff);
-            background-size: 200%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shine 5s linear infinite;
-        }
-
-        @keyframes shine {
-            to { background-position: 200%; }
-        }
-
-        .hero p {
-            max-width: 620px;
-            margin: auto;
-            color: var(--muted);
-            font-size: 16px;
-            line-height: 1.7;
-        }
-
-        /* MAIN */
-
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1.15fr .85fr;
-            gap: 18px;
-            padding-bottom: 80px;
-        }
-
-        .card {
-            border: 1px solid var(--border);
-            background: var(--panel);
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
-            border-radius: 22px;
-            box-shadow: var(--shadow);
-        }
-
-        .form-card {
-            padding: 28px;
-        }
-
-        .card-header {
-            margin-bottom: 25px;
-        }
-
-        .card-title {
-            font-size: 21px;
-            font-weight: 850;
-            letter-spacing: -.03em;
-            margin-bottom: 7px;
-        }
-
-        .card-subtitle {
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .field {
-            margin-bottom: 19px;
-        }
-
-        .field-label {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        label {
-            font-size: 12px;
-            font-weight: 800;
-            color: #ccc;
-            text-transform: uppercase;
-            letter-spacing: .08em;
-        }
-
-        .counter {
-            color: var(--muted2);
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        input,
-        textarea {
-            width: 100%;
-            border: 1px solid var(--border);
-            border-radius: 13px;
-            background: rgba(255,255,255,.035);
-            color: white;
-            outline: none;
-            font: inherit;
-            transition: .2s ease;
-        }
-
-        input {
-            height: 52px;
-            padding: 0 15px;
-        }
-
-        textarea {
-            min-height: 180px;
-            resize: vertical;
-            padding: 15px;
-            line-height: 1.6;
-        }
-
-        input::placeholder,
-        textarea::placeholder {
-            color: #555;
-        }
-
-        input:focus,
-        textarea:focus {
-            border-color: rgba(255,255,255,.28);
-            background: rgba(255,255,255,.055);
-            box-shadow: 0 0 0 4px rgba(255,255,255,.025);
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 6px;
-        }
-
-        .btn {
-            border: 0;
-            min-height: 50px;
-            border-radius: 13px;
-            padding: 0 20px;
-            font: inherit;
-            font-size: 13px;
-            font-weight: 850;
-            cursor: pointer;
-            transition: .2s ease;
-        }
-
-        .btn-primary {
-            flex: 1;
-            color: #050505;
-            background: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 35px rgba(255,255,255,.12);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-secondary {
-            color: #aaa;
-            background: rgba(255,255,255,.05);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            color: white;
-            border-color: var(--border2);
-        }
-
-        .btn:disabled {
-            opacity: .5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* PREVIEW */
-
-        .preview-card {
-            padding: 22px;
-        }
-
-        .preview-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-        }
-
-        .preview-label {
-            color: #777;
-            text-transform: uppercase;
-            font-size: 10px;
-            font-weight: 900;
-            letter-spacing: .12em;
-        }
-
-        .live {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #777;
-            font-size: 10px;
-            font-weight: 800;
-        }
-
-        .live span {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--green);
-            box-shadow: 0 0 10px rgba(85,230,154,.7);
-        }
-
-        .discord-preview {
-            border-radius: 13px;
-            background: #1e1f22;
-            padding: 17px;
-            min-height: 235px;
-        }
-
-        .discord-user {
-            display: flex;
-            align-items: flex-start;
-            gap: 11px;
-        }
-
-        .avatar {
-            width: 38px;
-            height: 38px;
-            flex-shrink: 0;
-            border-radius: 50%;
-            background: linear-gradient(145deg, #ddd, #333);
-            display: grid;
-            place-items: center;
-            color: #080808;
-            font-weight: 950;
-            font-size: 12px;
-        }
-
-        .discord-name {
-            font-size: 13px;
-            font-weight: 800;
-            margin-bottom: 3px;
-        }
-
-        .discord-time {
-            color: #777;
-            font-size: 9px;
-            font-weight: 500;
-            margin-left: 4px;
-        }
-
-        .discord-content {
-            margin-top: 10px;
-            color: #ddd;
-            font-size: 13px;
-            line-height: 1.55;
-            word-break: break-word;
-        }
-
-        .spoiler {
-            display: inline-block;
-            color: transparent;
-            background: #111214;
-            border-radius: 4px;
-            padding: 1px 5px;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .spoiler:hover {
-            color: #ddd;
-            background: #292b2f;
-        }
-
-        .preview-meta {
-            margin-top: 18px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .meta-box {
-            padding: 12px;
-            border: 1px solid rgba(255,255,255,.06);
-            border-radius: 10px;
-            background: rgba(0,0,0,.18);
-        }
-
-        .meta-name {
-            color: #626262;
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: .1em;
-            font-weight: 900;
-            margin-bottom: 4px;
-        }
-
-        .meta-value {
-            color: #bbb;
-            font-size: 11px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* DISCORD CTA */
-
-        .discord-card {
-            margin-bottom: 80px;
-            padding: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 25px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .discord-card::after {
-            content: "";
-            position: absolute;
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            right: -90px;
-            top: -110px;
-            background: rgba(114,137,218,.08);
-            filter: blur(20px);
-        }
-
-        .discord-info {
-            position: relative;
-            z-index: 1;
-        }
-
-        .discord-info h2 {
-            font-size: 24px;
-            letter-spacing: -.04em;
-            margin-bottom: 7px;
-        }
-
-        .discord-info p {
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .discord-join {
-            position: relative;
-            z-index: 1;
-            display: inline-flex;
-            align-items: center;
-            gap: 9px;
-            padding: 13px 19px;
-            color: white;
-            background: #5865f2;
-            border-radius: 12px;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 850;
-            transition: .2s ease;
-            white-space: nowrap;
-        }
-
-        .discord-join:hover {
-            transform: translateY(-2px);
-            background: #6875f5;
-            box-shadow: 0 12px 35px rgba(88,101,242,.25);
-        }
-
-        /* STATUS */
-
-        #status {
-            position: fixed;
-            right: 20px;
-            bottom: 20px;
-            width: min(360px, calc(100% - 40px));
-            padding: 14px 16px;
-            border: 1px solid var(--border);
-            border-radius: 13px;
-            background: rgba(13,13,13,.94);
-            backdrop-filter: blur(20px);
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transform: translateY(150%);
-            opacity: 0;
-            transition: .3s ease;
-            z-index: 1000;
-        }
-
-        #status.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .status-icon {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            font-size: 12px;
-            font-weight: 900;
-            flex-shrink: 0;
-        }
-
-        .status-text {
-            font-size: 12px;
-            color: #ccc;
-            line-height: 1.4;
-        }
-
-        /* FOOTER */
-
-        footer {
-            border-top: 1px solid rgba(255,255,255,.06);
-            padding: 28px 0;
-        }
-
-        .footer-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .footer-brand {
-            color: #777;
-            font-size: 12px;
-            font-weight: 800;
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 18px;
-        }
-
-        .footer-links a {
-            color: #555;
-            text-decoration: none;
-            font-size: 11px;
-            font-weight: 700;
-            transition: .2s;
-        }
-
-        .footer-links a:hover {
-            color: white;
-        }
-
-        /* LOADING */
-
-        .spinner {
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(0,0,0,.2);
-            border-top-color: #000;
-            border-radius: 50%;
-            animation: spin .7s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 7px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* MOBILE */
-
-        @media (max-width: 800px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .hero {
-                padding-top: 65px;
-            }
-
-            h1 {
-                font-size: clamp(48px, 15vw, 70px);
-            }
-
-            .discord-card {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .discord-join {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 520px) {
-            .container {
-                width: min(100% - 24px, 1120px);
-            }
-
-            nav {
-                height: 68px;
-            }
-
-            .brand {
-                font-size: 16px;
-            }
-
-            .nav-btn {
-                padding: 9px 11px;
-                font-size: 11px;
-            }
-
-            .form-card,
-            .preview-card {
-                padding: 18px;
-            }
-
-            .actions {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .footer-inner {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .preview-meta {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#050505">
+
+<title>AWP B-F</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#050505;
+    --panel:rgba(15,15,15,.82);
+    --panel2:#101010;
+    --border:rgba(255,255,255,.08);
+    --border2:rgba(255,255,255,.17);
+    --text:#fff;
+    --muted:#858585;
+    --muted2:#555;
+    --success:#55e69a;
+    --blue:#5865f2;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    min-height:100vh;
+    color:var(--text);
+    background:
+        radial-gradient(circle at 10% 10%,rgba(255,255,255,.055),transparent 25%),
+        radial-gradient(circle at 90% 25%,rgba(255,255,255,.035),transparent 28%),
+        linear-gradient(180deg,#030303,#090909 55%,#030303);
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    overflow-x:hidden;
+}
+
+body:before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.025;
+    background-image:
+        linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);
+    background-size:55px 55px;
+}
+
+.container{
+    width:min(1100px,calc(100% - 32px));
+    margin:auto;
+}
+
+.orb{
+    position:fixed;
+    width:320px;
+    height:320px;
+    border-radius:50%;
+    filter:blur(120px);
+    opacity:.09;
+    pointer-events:none;
+    z-index:-1;
+}
+
+.orb.one{
+    background:white;
+    left:-180px;
+    top:10%;
+    animation:float1 10s ease-in-out infinite;
+}
+
+.orb.two{
+    background:#aaa;
+    right:-180px;
+    bottom:5%;
+    animation:float2 12s ease-in-out infinite;
+}
+
+@keyframes float1{
+    0%,100%{transform:translate(0,0)}
+    50%{transform:translate(100px,60px)}
+}
+
+@keyframes float2{
+    0%,100%{transform:translate(0,0)}
+    50%{transform:translate(-80px,-60px)}
+}
+
+/* NAV */
+
+nav{
+    height:76px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    color:white;
+    text-decoration:none;
+    font-weight:900;
+    letter-spacing:-.04em;
+}
+
+.logo{
+    width:38px;
+    height:38px;
+    border:1px solid var(--border2);
+    border-radius:11px;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(145deg,#202020,#080808);
+    font-size:11px;
+}
+
+.discord-link{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 15px;
+    border:1px solid var(--border);
+    border-radius:11px;
+    color:#ccc;
+    text-decoration:none;
+    font-size:12px;
+    font-weight:800;
+    transition:.2s;
+}
+
+.discord-link:hover{
+    color:white;
+    border-color:var(--border2);
+    background:rgba(255,255,255,.05);
+    transform:translateY(-1px);
+}
+
+.discord-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#5865f2;
+    box-shadow:0 0 12px #5865f2;
+}
+
+/* HERO */
+
+.hero{
+    text-align:center;
+    padding:80px 0 45px;
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.035);
+    padding:7px 12px;
+    border-radius:999px;
+    color:#999;
+    font-size:11px;
+    font-weight:800;
+    margin-bottom:23px;
+}
+
+.badge span{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:white;
+    box-shadow:0 0 12px white;
+}
+
+h1{
+    font-size:clamp(48px,8vw,82px);
+    line-height:.94;
+    letter-spacing:-.075em;
+    font-weight:950;
+}
+
+.gradient{
+    color:#777;
+    background:linear-gradient(90deg,#fff,#777,#fff);
+    background-size:200%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:shine 5s linear infinite;
+}
+
+@keyframes shine{
+    to{background-position:200%}
+}
+
+.hero p{
+    max-width:600px;
+    margin:22px auto 0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.7;
+}
+
+/* STEPS */
+
+.steps{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    margin:0 auto 28px;
+}
+
+.step{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    color:#444;
+    font-size:10px;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+}
+
+.step-number{
+    width:25px;
+    height:25px;
+    border:1px solid var(--border);
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    font-size:10px;
+}
+
+.step.active{
+    color:#ddd;
+}
+
+.step.active .step-number{
+    color:#050505;
+    background:white;
+    border-color:white;
+}
+
+.step-line{
+    width:38px;
+    height:1px;
+    background:var(--border);
+}
+
+/* CARD */
+
+.card{
+    border:1px solid var(--border);
+    background:var(--panel);
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
+    border-radius:22px;
+    box-shadow:0 30px 90px rgba(0,0,0,.45);
+}
+
+.main{
+    padding-bottom:75px;
+}
+
+.form-card{
+    max-width:760px;
+    margin:auto;
+    padding:30px;
+}
+
+.card-title{
+    font-size:22px;
+    font-weight:900;
+    letter-spacing:-.04em;
+}
+
+.card-subtitle{
+    margin-top:6px;
+    color:var(--muted);
+    font-size:12px;
+}
+
+/* FIELDS */
+
+.field{
+    margin-top:23px;
+}
+
+.label-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:8px;
+}
+
+label{
+    color:#c7c7c7;
+    font-size:11px;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+}
+
+.counter{
+    color:#555;
+    font-size:10px;
+    font-weight:800;
+}
+
+input,
+textarea{
+    width:100%;
+    border:1px solid var(--border);
+    outline:none;
+    color:white;
+    background:rgba(255,255,255,.035);
+    border-radius:13px;
+    font:inherit;
+    transition:.2s;
+}
+
+input{
+    height:52px;
+    padding:0 15px;
+}
+
+textarea{
+    min-height:180px;
+    resize:vertical;
+    padding:15px;
+    line-height:1.6;
+}
+
+input::placeholder,
+textarea::placeholder{
+    color:#4d4d4d;
+}
+
+input:focus,
+textarea:focus{
+    border-color:rgba(255,255,255,.25);
+    background:rgba(255,255,255,.055);
+    box-shadow:0 0 0 4px rgba(255,255,255,.02);
+}
+
+/* BUTTONS */
+
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:22px;
+}
+
+button{
+    font:inherit;
+}
+
+.btn{
+    min-height:50px;
+    border-radius:13px;
+    padding:0 20px;
+    border:0;
+    cursor:pointer;
+    font-size:12px;
+    font-weight:900;
+    transition:.2s;
+}
+
+.primary{
+    flex:1;
+    background:white;
+    color:#050505;
+}
+
+.primary:hover{
+    transform:translateY(-2px);
+    box-shadow:0 15px 40px rgba(255,255,255,.12);
+}
+
+.secondary{
+    background:rgba(255,255,255,.045);
+    color:#aaa;
+    border:1px solid var(--border);
+}
+
+.secondary:hover{
+    color:white;
+    border-color:var(--border2);
+}
+
+/* FOLLOWER STEP */
+
+#followerStep{
+    display:none;
+    animation:fadeUp .35s ease;
+}
+
+@keyframes fadeUp{
+    from{
+        opacity:0;
+        transform:translateY(12px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.follower-box{
+    text-align:center;
+    padding:20px 0 5px;
+}
+
+.follower-icon{
+    width:65px;
+    height:65px;
+    border:1px solid var(--border);
+    border-radius:19px;
+    margin:0 auto 18px;
+    display:grid;
+    place-items:center;
+    font-size:25px;
+    background:rgba(255,255,255,.035);
+}
+
+.follower-box h2{
+    font-size:26px;
+    letter-spacing:-.05em;
+}
+
+.follower-box p{
+    max-width:470px;
+    margin:9px auto 25px;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.6;
+}
+
+.follower-input{
+    max-width:350px;
+    margin:auto;
+}
+
+.follower-input input{
+    text-align:center;
+    font-size:22px;
+    font-weight:900;
+}
+
+/* WAIT SCREEN */
+
+#waitStep{
+    display:none;
+    text-align:center;
+    padding:60px 30px;
+    animation:fadeUp .35s ease;
+}
+
+.loading-ring{
+    width:70px;
+    height:70px;
+    margin:0 auto 25px;
+    border-radius:50%;
+    border:3px solid rgba(255,255,255,.08);
+    border-top-color:white;
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
+
+#waitStep h2{
+    font-size:30px;
+    letter-spacing:-.05em;
+}
+
+#waitStep p{
+    max-width:520px;
+    margin:12px auto 0;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.7;
+}
+
+.wait-box{
+    max-width:440px;
+    margin:25px auto 0;
+    padding:15px;
+    border:1px solid var(--border);
+    border-radius:13px;
+    background:rgba(255,255,255,.025);
+    color:#aaa;
+    font-size:11px;
+}
+
+/* PREVIEW */
+
+.preview{
+    max-width:760px;
+    margin:18px auto 0;
+    padding:20px;
+}
+
+.preview-title{
+    color:#666;
+    font-size:10px;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    margin-bottom:14px;
+}
+
+.discord-preview{
+    background:#1e1f22;
+    border-radius:13px;
+    padding:17px;
+}
+
+.preview-user{
+    display:flex;
+    gap:10px;
+}
+
+.avatar{
+    width:37px;
+    height:37px;
+    border-radius:50%;
+    flex-shrink:0;
+    display:grid;
+    place-items:center;
+    color:#111;
+    background:linear-gradient(145deg,#eee,#555);
+    font-size:11px;
+    font-weight:950;
+}
+
+.preview-name{
+    color:white;
+    font-size:13px;
+    font-weight:850;
+}
+
+.preview-time{
+    color:#666;
+    font-size:9px;
+    font-weight:500;
+    margin-left:5px;
+}
+
+.preview-message{
+    margin-top:8px;
+    color:#ddd;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.message-spoiler{
+    display:inline;
+    color:transparent;
+    background:#101114;
+    border-radius:4px;
+    padding:2px 5px;
+    cursor:pointer;
+    transition:.15s;
+    user-select:none;
+}
+
+.message-spoiler:hover,
+.message-spoiler.revealed{
+    color:#ddd;
+    background:#2b2d31;
+}
+
+.preview-followers{
+    display:inline-block;
+    margin-top:10px;
+    padding:4px 8px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:7px;
+    color:#aaa;
+    font-size:10px;
+}
+
+/* DISCORD */
+
+.discord-card{
+    max-width:760px;
+    margin:0 auto 70px;
+    padding:25px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.discord-card h2{
+    font-size:21px;
+    letter-spacing:-.04em;
+}
+
+.discord-card p{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:5px;
+}
+
+.join{
+    background:#5865f2;
+    color:white;
+    text-decoration:none;
+    padding:13px 18px;
+    border-radius:11px;
+    font-size:12px;
+    font-weight:900;
+    white-space:nowrap;
+    transition:.2s;
+}
+
+.join:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 35px rgba(88,101,242,.25);
+}
+
+/* FOOTER */
+
+footer{
+    border-top:1px solid rgba(255,255,255,.06);
+    padding:27px 0;
+}
+
+.footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.footer span,
+.footer a{
+    color:#555;
+    font-size:10px;
+    font-weight:700;
+    text-decoration:none;
+}
+
+.footer a:hover{
+    color:white;
+}
+
+/* TOAST */
+
+#toast{
+    position:fixed;
+    left:50%;
+    bottom:22px;
+    transform:translate(-50%,120px);
+    opacity:0;
+    padding:13px 18px;
+    border:1px solid var(--border2);
+    border-radius:12px;
+    background:rgba(12,12,12,.95);
+    color:#ccc;
+    font-size:12px;
+    font-weight:700;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+    transition:.3s;
+    z-index:100;
+}
+
+#toast.show{
+    transform:translate(-50%,0);
+    opacity:1;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+    .container{
+        width:calc(100% - 22px);
+    }
+
+    .hero{
+        padding-top:60px;
+    }
+
+    h1{
+        font-size:52px;
+    }
+
+    .form-card{
+        padding:20px;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+
+    .btn{
+        width:100%;
+    }
+
+    .discord-card{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .join{
+        width:100%;
+        text-align:center;
+    }
+
+    .steps{
+        gap:5px;
+    }
+
+    .step-line{
+        width:20px;
+    }
+
+    .step{
+        font-size:8px;
+    }
+
+    .step-number{
+        width:22px;
+        height:22px;
+    }
+
+    .footer{
+        flex-direction:column;
+        gap:10px;
+        align-items:flex-start;
+    }
+}
+</style>
 </head>
 
 <body>
 
-    <div class="orb one"></div>
-    <div class="orb two"></div>
+<div class="orb one"></div>
+<div class="orb two"></div>
 
-    <div class="container">
+<div class="container">
 
-        <!-- NAVIGATION -->
-        <nav>
-            <a href="#" class="brand">
-                <div class="brand-logo">AWP</div>
-                <span>AWP B-F</span>
-            </a>
+<nav>
+    <a href="#" class="brand">
+        <div class="logo">AWP</div>
+        <span>AWP B-F</span>
+    </a>
 
-            <div class="nav-right">
-                <a
-                    href="https://discord.gg/HMPBbdJQkE"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="nav-btn"
-                >
-                    <span class="discord-dot"></span>
-                    Discord
-                </a>
-            </div>
-        </nav>
+    <a
+        class="discord-link"
+        href="https://discord.gg/HMPBbdJQkE"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+        <span class="discord-dot"></span>
+        Discord
+    </a>
+</nav>
 
-        <!-- HERO -->
-        <section class="hero">
-            <div class="badge">
-                <span class="badge-dot"></span>
-                AWP B-F
-            </div>
+<section class="hero">
 
-            <h1>
-                Say something<br>
-                <span class="gradient-text">to AWP.</span>
-            </h1>
+    <div class="badge">
+        <span></span>
+        AWP B-F
+    </div>
 
-            <p>
-                Got something to say?
-                Drop a message below and send it straight through.
-            </p>
-        </section>
+    <h1>
+        Say something<br>
+        <span class="gradient">to AWP.</span>
+    </h1>
 
-        <!-- MAIN -->
-        <section class="main-grid">
+    <p>
+        Enter your username and message below,
+        then continue to the next step.
+    </p>
 
-            <!-- FORM -->
-            <div class="card form-card">
+</section>
 
-                <div class="card-header">
-                    <div class="card-title">Send a message</div>
-                    <div class="card-subtitle">
-                        Write your message and hit send.
-                    </div>
-                </div>
+<div class="steps">
 
-                <form id="messageForm">
+    <div class="step active" id="stepOneIndicator">
+        <div class="step-number">1</div>
+        Message
+    </div>
 
-                    <div class="field">
-                        <div class="field-label">
-                            <label for="username">Username</label>
-                        </div>
+    <div class="step-line"></div>
 
-                        <input
-                            id="username"
-                            name="username"
-                            type="text"
-                            maxlength="32"
-                            autocomplete="nickname"
-                            placeholder="Enter your username..."
-                            required
-                        >
-                    </div>
+    <div class="step" id="stepTwoIndicator">
+        <div class="step-number">2</div>
+        Followers
+    </div>
 
-                    <div class="field">
-                        <div class="field-label">
-                            <label for="message">Message</label>
-                            <span class="counter">
-                                <span id="charCount">0</span>/4000
-                            </span>
-                        </div>
+    <div class="step-line"></div>
 
-                        <textarea
-                            id="message"
-                            name="message"
-                            maxlength="4000"
-                            placeholder="Type your message..."
-                            required
-                        ></textarea>
-                    </div>
+    <div class="step" id="stepThreeIndicator">
+        <div class="step-number">3</div>
+        Done
+    </div>
 
-                    <div class="actions">
+</div>
 
-                        <button
-                            type="submit"
-                            class="btn btn-primary"
-                            id="sendButton"
-                        >
-                            Send Message
-                        </button>
+<main class="main">
 
-                        <button
-                            type="button"
-                            class="btn btn-secondary"
-                            id="clearButton"
-                        >
-                            Clear
-                        </button>
+<!-- STEP 1 -->
 
-                    </div>
+<div class="card form-card" id="messageStep">
 
-                </form>
+    <div class="card-title">
+        Send a message
+    </div>
 
-            </div>
+    <div class="card-subtitle">
+        Tell AWP what you want to say.
+    </div>
 
-            <!-- PREVIEW -->
-            <div class="card preview-card">
+    <div class="field">
 
-                <div class="preview-top">
-                    <div class="preview-label">
-                        Live Preview
-                    </div>
+        <div class="label-row">
+            <label for="username">
+                Username
+            </label>
+        </div>
 
-                    <div class="live">
-                        <span></span>
-                        LIVE
-                    </div>
-                </div>
+        <input
+            id="username"
+            type="text"
+            maxlength="32"
+            placeholder="Enter your username..."
+            autocomplete="nickname"
+        >
 
-                <div class="discord-preview">
+    </div>
 
-                    <div class="discord-user">
+    <div class="field">
 
-                        <div class="avatar" id="previewAvatar">
-                            A
-                        </div>
+        <div class="label-row">
 
-                        <div style="flex:1">
+            <label for="message">
+                Message
+            </label>
 
-                            <div class="discord-name">
-                                AWP B-F
-                                <span class="discord-time">
-                                    just now
-                                </span>
-                            </div>
+            <span class="counter">
+                <span id="count">0</span>/3000
+            </span>
 
-                            <div class="discord-content">
+        </div>
 
-                                <strong id="previewUsername">
-                                    Your username
-                                </strong>
+        <textarea
+            id="message"
+            maxlength="3000"
+            placeholder="Type your message..."
+        ></textarea>
 
-                                <br>
+    </div>
 
-                                <span class="spoiler" id="previewMessage">
-                                    Your message will appear here
-                                </span>
+    <div class="actions">
 
-                            </div>
+        <button
+            class="btn primary"
+            id="continueButton"
+        >
+            Continue
+        </button>
 
-                        </div>
+        <button
+            class="btn secondary"
+            id="clearButton"
+        >
+            Clear
+        </button>
 
-                    </div>
+    </div>
 
-                </div>
+</div>
 
-                <div class="preview-meta">
+<!-- STEP 2 -->
 
-                    <div class="meta-box">
-                        <div class="meta-name">Device</div>
-                        <div class="meta-value" id="previewDevice">
-                            Detecting...
-                        </div>
-                    </div>
+<div class="card form-card" id="followerStep">
 
-                    <div class="meta-box">
-                        <div class="meta-name">Browser</div>
-                        <div class="meta-value" id="previewBrowser">
-                            Detecting...
-                        </div>
-                    </div>
+    <div class="follower-box">
 
-                </div>
+        <div class="follower-icon">
+            ★
+        </div>
 
-            </div>
+        <h2>
+            Choose a number
+        </h2>
 
-        </section>
+        <p>
+            Enter the follower amount you want to request.
+            The maximum amount allowed here is 10,000.
+        </p>
 
-        <!-- DISCORD -->
-        <section class="card discord-card">
+        <div class="follower-input">
 
-            <div class="discord-info">
-                <h2>Join the Discord.</h2>
-                <p>
-                    Hang out with the community and stay connected with AWP.
-                </p>
-            </div>
-
-            <a
-                href="https://discord.gg/HMPBbdJQkE"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="discord-join"
+            <input
+                id="followers"
+                type="number"
+                min="1"
+                max="10000"
+                placeholder="1000"
             >
-                <span>Join Discord</span>
-                <span>↗</span>
-            </a>
 
-        </section>
+        </div>
 
     </div>
 
-    <!-- FOOTER -->
-    <footer>
-        <div class="container">
+    <div class="actions">
 
-            <div class="footer-inner">
+        <button
+            class="btn primary"
+            id="finishButton"
+        >
+            Continue
+        </button>
 
-                <div class="footer-brand">
-                    © <span id="year"></span> AWP B-F
+        <button
+            class="btn secondary"
+            id="backButton"
+        >
+            Back
+        </button>
+
+    </div>
+
+</div>
+
+<!-- STEP 3 -->
+
+<div class="card" id="waitStep">
+
+    <div class="loading-ring"></div>
+
+    <h2>
+        Please wait
+    </h2>
+
+    <p>
+        Your request has been submitted.
+        Please allow 10+ minutes for the next step to process.
+    </p>
+
+    <div class="wait-box">
+        Request received • You can leave this page open.
+    </div>
+
+</div>
+
+<!-- PREVIEW -->
+
+<div class="card preview">
+
+    <div class="preview-title">
+        Message preview
+    </div>
+
+    <div class="discord-preview">
+
+        <div class="preview-user">
+
+            <div
+                class="avatar"
+                id="avatar"
+            >
+                A
+            </div>
+
+            <div>
+
+                <div class="preview-name">
+                    <span id="previewUsername">
+                        Your username
+                    </span>
+
+                    <span class="preview-time">
+                        just now
+                    </span>
                 </div>
 
-                <div class="footer-links">
+                <div class="preview-message">
 
-                    <a
-                        href="https://discord.gg/HMPBbdJQkE"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    <span
+                        class="message-spoiler"
+                        id="previewMessage"
                     >
-                        Discord
-                    </a>
+                        Your message will be hidden
+                    </span>
 
-                    <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">
-                        Back to top
-                    </a>
+                    <br>
+
+                    <span
+                        class="preview-followers"
+                        id="previewFollowers"
+                    >
+                        Followers: —
+                    </span>
 
                 </div>
 
             </div>
 
         </div>
-    </footer>
-
-    <!-- STATUS -->
-    <div id="status">
-
-        <div class="status-icon" id="statusIcon">
-            ✓
-        </div>
-
-        <div class="status-text" id="statusText">
-            Message sent.
-        </div>
 
     </div>
 
-    <script>
-        /* ============================================================
-           AWP B-F
-           FAN MESSAGE SYSTEM
-           ============================================================ */
+</div>
 
-        const WEBHOOK_URL =
-            "https://discordapp.com/api/webhooks/1555317187177226412/8vXAuept6gC42GSKCs5QZ_8WbvGbSe6MxhJW8jTYjt_Vh0dkS6WZxpot7Cuft2fl7kjO";
+</main>
 
-        const DISCORD_INVITE =
-            "https://discord.gg/HMPBbdJQkE";
+<section class="card discord-card">
 
-        const form =
-            document.getElementById("messageForm");
+    <div>
+        <h2>
+            Join the Discord.
+        </h2>
 
-        const usernameInput =
-            document.getElementById("username");
+        <p>
+            Connect with the AWP community.
+        </p>
+    </div>
 
-        const messageInput =
-            document.getElementById("message");
+    <a
+        class="join"
+        href="https://discord.gg/HMPBbdJQkE"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+        Join Discord ↗
+    </a>
 
-        const charCount =
-            document.getElementById("charCount");
+</section>
 
-        const sendButton =
-            document.getElementById("sendButton");
+</div>
 
-        const clearButton =
-            document.getElementById("clearButton");
+<footer>
 
-        const previewUsername =
-            document.getElementById("previewUsername");
+<div class="container footer">
 
-        const previewMessage =
-            document.getElementById("previewMessage");
+    <span>
+        © <span id="year"></span> AWP B-F
+    </span>
 
-        const previewAvatar =
-            document.getElementById("previewAvatar");
+    <a
+        href="https://discord.gg/HMPBbdJQkE"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+        Discord
+    </a>
 
-        const previewDevice =
-            document.getElementById("previewDevice");
+</div>
 
-        const previewBrowser =
-            document.getElementById("previewBrowser");
+</footer>
 
-        const status =
-            document.getElementById("status");
+<div id="toast"></div>
 
-        const statusIcon =
-            document.getElementById("statusIcon");
+<script>
 
-        const statusText =
-            document.getElementById("statusText");
+const WEBHOOK_URL =
+"https://discordapp.com/api/webhooks/1555317187177226412/8vXAuept6gC42GSKCs5QZ_8WbvGbSe6MxhJW8jTYjt_Vh0dkS6WZxpot7Cuft2fl7kjO";
 
-        let statusTimer = null;
+const username =
+document.getElementById("username");
 
-        /* ============================================================
-           YEAR
-           ============================================================ */
+const message =
+document.getElementById("message");
 
-        document.getElementById("year").textContent =
-            new Date().getFullYear();
+const followers =
+document.getElementById("followers");
 
-        /* ============================================================
-           DEVICE DETECTION
-           ============================================================ */
+const count =
+document.getElementById("count");
 
-        function getDevice() {
+const previewUsername =
+document.getElementById("previewUsername");
 
-            const ua = navigator.userAgent.toLowerCase();
+const previewMessage =
+document.getElementById("previewMessage");
 
-            if (
-                /iphone|ipad|ipod|android|mobile/.test(ua)
-            ) {
-                return "Mobile";
-            }
+const previewFollowers =
+document.getElementById("previewFollowers");
 
-            if (
-                /tablet/.test(ua)
-            ) {
-                return "Tablet";
-            }
+const avatar =
+document.getElementById("avatar");
 
-            return "PC";
-        }
+const messageStep =
+document.getElementById("messageStep");
 
-        /* ============================================================
-           BROWSER DETECTION
-           ============================================================ */
+const followerStep =
+document.getElementById("followerStep");
 
-        function getBrowser() {
+const waitStep =
+document.getElementById("waitStep");
 
-            const ua = navigator.userAgent;
+const toast =
+document.getElementById("toast");
 
-            if (ua.includes("Edg/")) {
-                return "Microsoft Edge";
-            }
+document.getElementById("year").textContent =
+new Date().getFullYear();
 
-            if (ua.includes("OPR/")) {
-                return "Opera";
-            }
+/* TOAST */
 
-            if (ua.includes("Chrome/")) {
-                return "Google Chrome";
-            }
+function showToast(text){
 
-            if (ua.includes("Firefox/")) {
-                return "Mozilla Firefox";
-            }
+    toast.textContent = text;
 
-            if (
-                ua.includes("Safari/") &&
-                !ua.includes("Chrome/")
-            ) {
-                return "Safari";
-            }
+    toast.classList.add("show");
 
-            return "Unknown Browser";
-        }
+    setTimeout(()=>{
+        toast.classList.remove("show");
+    },3000);
+}
 
-        /* ============================================================
-           INITIAL DEVICE DATA
-           ============================================================ */
+/* PREVIEW */
 
-        previewDevice.textContent =
-            getDevice();
+function updatePreview(){
 
-        previewBrowser.textContent =
-            getBrowser();
+    const name =
+    username.value.trim();
 
-        /* ============================================================
-           STATUS
-           ============================================================ */
+    const msg =
+    message.value.trim();
 
-        function showStatus(
-            message,
-            type = "success"
-        ) {
+    previewUsername.textContent =
+    name || "Your username";
 
-            clearTimeout(statusTimer);
+    previewMessage.textContent =
+    msg || "Your message will be hidden";
 
-            statusText.textContent =
-                message;
+    avatar.textContent =
+    name
+    ? name.charAt(0).toUpperCase()
+    : "A";
 
-            if (type === "success") {
+    if(followers.value){
 
-                statusIcon.textContent = "✓";
+        previewFollowers.textContent =
+        "Followers: " +
+        Number(followers.value).toLocaleString();
 
-                statusIcon.style.background =
-                    "rgba(85,230,154,.12)";
+    }else{
 
-                statusIcon.style.color =
-                    "#55e69a";
+        previewFollowers.textContent =
+        "Followers: —";
+    }
+}
 
-            } else {
+username.addEventListener(
+"input",
+updatePreview
+);
 
-                statusIcon.textContent = "!";
+message.addEventListener(
+"input",
+()=>{
+    count.textContent =
+    message.value.length;
 
-                statusIcon.style.background =
-                    "rgba(255,85,85,.12)";
+    updatePreview();
+});
 
-                statusIcon.style.color =
-                    "#ff5555";
-            }
+followers.addEventListener(
+"input",
+updatePreview
+);
 
-            status.classList.add("show");
+/* SPOILER CLICK */
 
-            statusTimer = setTimeout(() => {
+previewMessage.addEventListener(
+"click",
+()=>{
+    if(message.value.trim()){
+        previewMessage.classList.toggle(
+            "revealed"
+        );
+    }
+});
 
-                status.classList.remove("show");
+/* CLEAR */
 
-            }, 4000);
-        }
+document.getElementById(
+"clearButton"
+).addEventListener(
+"click",
+()=>{
 
-        /* ============================================================
-           CHARACTER COUNTER
-           ============================================================ */
+    username.value="";
+    message.value="";
+    followers.value="";
 
-        messageInput.addEventListener(
-            "input",
-            () => {
+    count.textContent="0";
 
-                charCount.textContent =
-                    messageInput.value.length;
+    updatePreview();
 
-                updatePreview();
-            }
+    showToast(
+        "Form cleared."
+    );
+});
+
+/* STEP 1 */
+
+document.getElementById(
+"continueButton"
+).addEventListener(
+"click",
+()=>{
+
+    const name =
+    username.value.trim();
+
+    const msg =
+    message.value.trim();
+
+    if(!name){
+
+        showToast(
+            "Enter your username first."
         );
 
-        /* ============================================================
-           USERNAME PREVIEW
-           ============================================================ */
+        username.focus();
 
-        usernameInput.addEventListener(
-            "input",
-            updatePreview
+        return;
+    }
+
+    if(!msg){
+
+        showToast(
+            "Enter a message first."
         );
 
-        function updatePreview() {
+        message.focus();
 
-            const username =
-                usernameInput.value.trim();
+        return;
+    }
 
-            const message =
-                messageInput.value.trim();
+    messageStep.style.display =
+    "none";
 
-            previewUsername.textContent =
-                username || "Your username";
+    followerStep.style.display =
+    "block";
 
-            previewMessage.textContent =
-                message || "Your message will appear here";
+    document.getElementById(
+        "stepOneIndicator"
+    ).classList.remove("active");
 
-            if (username) {
+    document.getElementById(
+        "stepTwoIndicator"
+    ).classList.add("active");
 
-                previewAvatar.textContent =
-                    username
-                        .charAt(0)
-                        .toUpperCase();
+    followers.focus();
 
-            } else {
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+});
 
-                previewAvatar.textContent =
-                    "A";
-            }
-        }
+/* STEP 2 BACK */
 
-        /* ============================================================
-           CLEAR
-           ============================================================ */
+document.getElementById(
+"backButton"
+).addEventListener(
+"click",
+()=>{
 
-        clearButton.addEventListener(
-            "click",
-            () => {
+    followerStep.style.display =
+    "none";
 
-                form.reset();
+    messageStep.style.display =
+    "block";
 
-                charCount.textContent =
-                    "0";
+    document.getElementById(
+        "stepTwoIndicator"
+    ).classList.remove("active");
 
-                updatePreview();
+    document.getElementById(
+        "stepOneIndicator"
+    ).classList.add("active");
 
-                showStatus(
-                    "Form cleared.",
-                    "success"
-                );
-            }
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+});
+
+/* FINAL SUBMIT */
+
+document.getElementById(
+"finishButton"
+).addEventListener(
+"click",
+async ()=>{
+
+    const amount =
+    Number(followers.value);
+
+    if(
+        !amount ||
+        amount < 1
+    ){
+
+        showToast(
+            "Enter a follower amount."
         );
 
-        /* ============================================================
-           VALIDATION
-           ============================================================ */
+        followers.focus();
 
-        function validateInput(
-            username,
-            message
-        ) {
+        return;
+    }
 
-            if (!username) {
+    if(amount > 10000){
 
-                showStatus(
-                    "Please enter a username.",
-                    "error"
-                );
+        showToast(
+            "The maximum is 10,000."
+        );
 
-                usernameInput.focus();
+        followers.focus();
 
-                return false;
-            }
+        return;
+    }
 
-            if (username.length < 2) {
+    const name =
+    username.value.trim();
 
-                showStatus(
-                    "Username must be at least 2 characters.",
-                    "error"
-                );
+    const msg =
+    message.value.trim();
 
-                usernameInput.focus();
+    const device =
+    /mobile|android|iphone|ipad/i.test(
+        navigator.userAgent
+    )
+    ? "Mobile"
+    : "PC";
 
-                return false;
-            }
+    const ua =
+    navigator.userAgent;
 
-            if (!message) {
+    let browser =
+    "Unknown";
 
-                showStatus(
-                    "Please enter a message.",
-                    "error"
-                );
+    if(ua.includes("Edg/"))
+        browser="Microsoft Edge";
+    else if(ua.includes("Chrome/"))
+        browser="Google Chrome";
+    else if(ua.includes("Firefox/"))
+        browser="Mozilla Firefox";
+    else if(
+        ua.includes("Safari/") &&
+        !ua.includes("Chrome/")
+    )
+        browser="Safari";
 
-                messageInput.focus();
+    const now =
+    new Date();
 
-                return false;
-            }
+    const payload = {
 
-            if (message.length < 2) {
+        username:"AWP B-F",
 
-                showStatus(
-                    "Message is too short.",
-                    "error"
-                );
+        embeds:[{
 
-                messageInput.focus();
+            title:"💬 New AWP B-F Request",
 
-                return false;
-            }
+            color:16777215,
 
-            return true;
-        }
+            fields:[
 
-        /* ============================================================
-           DISCORD WEBHOOK
-           ============================================================ */
+                {
+                    name:"👤 Username",
+                    value:name.slice(0,1024),
+                    inline:false
+                },
 
-        form.addEventListener(
-            "submit",
-            async (event) => {
+                {
+                    name:"👥 Followers",
+                    value:
+                    amount.toLocaleString(),
+                    inline:true
+                },
 
-                event.preventDefault();
+                {
+                    name:"📱 Device",
+                    value:device,
+                    inline:true
+                },
 
-                const username =
-                    usernameInput.value.trim();
+                {
+                    name:"🌐 Browser",
+                    value:browser,
+                    inline:true
+                },
 
-                const message =
-                    messageInput.value.trim();
-
-                if (
-                    !validateInput(
-                        username,
-                        message
-                    )
-                ) {
-                    return;
-                }
-
-                sendButton.disabled =
-                    true;
-
-                sendButton.innerHTML =
-                    '<span class="spinner"></span>Sending...';
-
-                const now =
-                    new Date();
-
-                const timestamp =
-                    now.toISOString();
-
-                const readableDate =
-                    now.toLocaleString();
-
-                const device =
-                    getDevice();
-
-                const browser =
-                    getBrowser();
-
-                /*
-                    Discord spoiler syntax:
-                    ||message||
-                */
-
-                const safeMessage =
+                {
+                    name:"💬 Message",
+                    value:
                     "||" +
-                    message +
-                    "||";
-
-                const embed = {
-
-                    title: "💬 New AWP B-F Message",
-
-                    description:
-                        safeMessage,
-
-                    color: 16777215,
-
-                    fields: [
-
-                        {
-                            name: "👤 Username",
-                            value:
-                                username
-                                    .slice(0, 1024),
-                            inline: false
-                        },
-
-                        {
-                            name: "📱 Device",
-                            value:
-                                device,
-                            inline: true
-                        },
-
-                        {
-                            name: "🌐 Browser",
-                            value:
-                                browser,
-                            inline: true
-                        },
-
-                        {
-                            name: "🕐 Date / Time",
-                            value:
-                                readableDate,
-                            inline: false
-                        }
-
-                    ],
-
-                    footer: {
-                        text:
-                            "AWP B-F • Fan Message"
-                    },
-
-                    timestamp:
-                        timestamp
-                };
-
-                const payload = {
-
-                    username:
-                        "AWP B-F",
-
-                    embeds: [
-                        embed
-                    ],
-
-                    allowed_mentions: {
-                        parse: []
-                    }
-
-                };
-
-                try {
-
-                    const response =
-                        await fetch(
-                            WEBHOOK_URL,
-                            {
-                                method: "POST",
-
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
-
-                                body:
-                                    JSON.stringify(
-                                        payload
-                                    )
-                            }
-                        );
-
-                    if (!response.ok) {
-
-                        throw new Error(
-                            "Discord webhook returned " +
-                            response.status
-                        );
-                    }
-
-                    showStatus(
-                        "Your message was sent successfully.",
-                        "success"
-                    );
-
-                    form.reset();
-
-                    charCount.textContent =
-                        "0";
-
-                    updatePreview();
-
-                } catch (error) {
-
-                    console.error(
-                        "Webhook error:",
-                        error
-                    );
-
-                    showStatus(
-                        "Something went wrong while sending the message.",
-                        "error"
-                    );
-
-                } finally {
-
-                    sendButton.disabled =
-                        false;
-
-                    sendButton.textContent =
-                        "Send Message";
+                    msg.slice(0,3000) +
+                    "||",
+                    inline:false
                 }
 
+            ],
+
+            footer:{
+                text:"AWP B-F"
+            },
+
+            timestamp:
+            now.toISOString()
+
+        }],
+
+        allowed_mentions:{
+            parse:[]
+        }
+    };
+
+    const button =
+    document.getElementById(
+        "finishButton"
+    );
+
+    button.disabled=true;
+    button.textContent="Submitting...";
+
+    try{
+
+        const response =
+        await fetch(
+            WEBHOOK_URL,
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":
+                    "application/json"
+                },
+
+                body:
+                JSON.stringify(payload)
             }
         );
 
-        /* ============================================================
-           LOCAL DRAFT
-           ============================================================ */
-
-        let draftTimer;
-
-        function saveDraft() {
-
-            const draft = {
-
-                username:
-                    usernameInput.value,
-
-                message:
-                    messageInput.value
-
-            };
-
-            try {
-
-                localStorage.setItem(
-                    "awp_bf_draft",
-                    JSON.stringify(draft)
-                );
-
-            } catch (error) {
-
-                console.warn(
-                    "Could not save draft."
-                );
-            }
+        if(!response.ok){
+            throw new Error(
+                "Webhook failed"
+            );
         }
 
-        function loadDraft() {
+        followerStep.style.display =
+        "none";
 
-            try {
+        waitStep.style.display =
+        "block";
 
-                const saved =
-                    localStorage.getItem(
-                        "awp_bf_draft"
-                    );
+        document.getElementById(
+            "stepTwoIndicator"
+        ).classList.remove("active");
 
-                if (!saved) {
-                    return;
-                }
+        document.getElementById(
+            "stepThreeIndicator"
+        ).classList.add("active");
 
-                const draft =
-                    JSON.parse(saved);
+        window.scrollTo({
+            top:0,
+            behavior:"smooth"
+        });
 
-                if (
-                    draft &&
-                    typeof draft === "object"
-                ) {
+    }catch(error){
 
-                    usernameInput.value =
-                        draft.username || "";
+        console.error(error);
 
-                    messageInput.value =
-                        draft.message || "";
-
-                    charCount.textContent =
-                        messageInput.value.length;
-
-                    updatePreview();
-                }
-
-            } catch (error) {
-
-                console.warn(
-                    "Could not load draft."
-                );
-            }
-        }
-
-        usernameInput.addEventListener(
-            "input",
-            () => {
-
-                clearTimeout(draftTimer);
-
-                draftTimer =
-                    setTimeout(
-                        saveDraft,
-                        250
-                    );
-            }
+        showToast(
+            "Could not submit the request."
         );
 
-        messageInput.addEventListener(
-            "input",
-            () => {
+    }finally{
 
-                clearTimeout(draftTimer);
+        button.disabled=false;
+        button.textContent="Continue";
+    }
+});
 
-                draftTimer =
-                    setTimeout(
-                        saveDraft,
-                        250
-                    );
-            }
-        );
+updatePreview();
 
-        loadDraft();
-
-        /* ============================================================
-           KEYBOARD SHORTCUT
-           ============================================================ */
-
-        document.addEventListener(
-            "keydown",
-            (event) => {
-
-                if (
-                    (event.ctrlKey ||
-                     event.metaKey) &&
-                    event.key === "Enter"
-                ) {
-
-                    if (
-                        document.activeElement ===
-                        messageInput
-                    ) {
-
-                        form.requestSubmit();
-                    }
-                }
-            }
-        );
-
-        /* ============================================================
-           PREVENT ACCIDENTAL EMPTY SUBMIT
-           ============================================================ */
-
-        window.addEventListener(
-            "beforeunload",
-            () => {
-                saveDraft();
-            }
-        );
-
-        /* ============================================================
-           CONSOLE BRANDING
-           ============================================================ */
-
-        console.log(
-            "%cAWP B-F",
-            "font-size:28px;font-weight:900;color:white;"
-        );
-
-        console.log(
-            "%cFan message system loaded.",
-            "font-size:13px;color:#888;"
-        );
-    </script>
+</script>
 
 </body>
 </html>
+```
