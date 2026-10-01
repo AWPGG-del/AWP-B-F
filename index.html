@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#070707">
+    <meta name="description" content="AWP B-F — Send a message to AWP.">
+    <title>AWP B-F</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #050505;
+            --bg2: #090909;
+            --panel: rgba(15, 15, 15, 0.82);
+            --panel2: rgba(22, 22, 22, 0.72);
+            --border: rgba(255,255,255,.08);
+            --border2: rgba(255,255,255,.16);
+            --text: #fff;
+            --muted: #898989;
+            --muted2: #5b5b5b;
+            --green: #55e69a;
+            --red: #ff5555;
+            --shadow: 0 30px 100px rgba(0,0,0,.55);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 10% 10%, rgba(255,255,255,.055), transparent 25%),
+                radial-gradient(circle at 90% 20%, rgba(255,255,255,.04), transparent 28%),
+                linear-gradient(180deg, #040404, #090909 50%, #040404);
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: .035;
+            background-image:
+                linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px);
+            background-size: 55px 55px;
+            mask-image: linear-gradient(to bottom, black, transparent);
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            pointer-events: none;
+            opacity: .12;
+            z-index: -1;
+        }
+
+        .orb.one {
+            width: 320px;
+            height: 320px;
+            background: white;
+            top: 5%;
+            left: -160px;
+            animation: floatOne 9s ease-in-out infinite;
+        }
+
+        .orb.two {
+            width: 280px;
+            height: 280px;
+            background: #aaa;
+            right: -130px;
+            top: 42%;
+            animation: floatTwo 11s ease-in-out infinite;
+        }
+
+        @keyframes floatOne {
+            0%,100% { transform: translate(0,0); }
+            50% { transform: translate(80px,60px); }
+        }
+
+        @keyframes floatTwo {
+            0%,100% { transform: translate(0,0); }
+            50% { transform: translate(-70px,-80px); }
+        }
+
+        .container {
+            width: min(1120px, calc(100% - 36px));
+            margin: auto;
+        }
+
+        /* NAV */
+
+        nav {
+            height: 78px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+            font-weight: 900;
+            letter-spacing: -.04em;
+            font-size: 19px;
+        }
+
+        .brand-logo {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+            background: linear-gradient(145deg, #1c1c1c, #080808);
+            box-shadow: inset 0 1px rgba(255,255,255,.08);
+            font-size: 13px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            color: #ddd;
+            background: rgba(255,255,255,.035);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            transition: .2s ease;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--border2);
+            background: rgba(255,255,255,.08);
+            transform: translateY(-1px);
+        }
+
+        .discord-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #7289da;
+            box-shadow: 0 0 12px rgba(114,137,218,.8);
+        }
+
+        /* HERO */
+
+        .hero {
+            text-align: center;
+            padding: 92px 0 54px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,.035);
+            border-radius: 999px;
+            color: #aaa;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 0 12px white;
+        }
+
+        h1 {
+            font-size: clamp(48px, 8vw, 86px);
+            line-height: .95;
+            letter-spacing: -.07em;
+            font-weight: 950;
+            margin-bottom: 22px;
+        }
+
+        .gradient-text {
+            color: #777;
+            background: linear-gradient(90deg, #fff, #777, #fff);
+            background-size: 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 5s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200%; }
+        }
+
+        .hero p {
+            max-width: 620px;
+            margin: auto;
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        /* MAIN */
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.15fr .85fr;
+            gap: 18px;
+            padding-bottom: 80px;
+        }
+
+        .card {
+            border: 1px solid var(--border);
+            background: var(--panel);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-card {
+            padding: 28px;
+        }
+
+        .card-header {
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 21px;
+            font-weight: 850;
+            letter-spacing: -.03em;
+            margin-bottom: 7px;
+        }
+
+        .card-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .field {
+            margin-bottom: 19px;
+        }
+
+        .field-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 800;
+            color: #ccc;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .counter {
+            color: var(--muted2);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background: rgba(255,255,255,.035);
+            color: white;
+            outline: none;
+            font: inherit;
+            transition: .2s ease;
+        }
+
+        input {
+            height: 52px;
+            padding: 0 15px;
+        }
+
+        textarea {
+            min-height: 180px;
+            resize: vertical;
+            padding: 15px;
+            line-height: 1.6;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #555;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: rgba(255,255,255,.28);
+            background: rgba(255,255,255,.055);
+            box-shadow: 0 0 0 4px rgba(255,255,255,.025);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .btn {
+            border: 0;
+            min-height: 50px;
+            border-radius: 13px;
+            padding: 0 20px;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 850;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .btn-primary {
+            flex: 1;
+            color: #050505;
+            background: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(255,255,255,.12);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            color: #aaa;
+            background: rgba(255,255,255,.05);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            color: white;
+            border-color: var(--border2);
+        }
+
+        .btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* PREVIEW */
+
+        .preview-card {
+            padding: 22px;
+        }
+
+        .preview-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .preview-label {
+            color: #777;
+            text-transform: uppercase;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: .12em;
+        }
+
+        .live {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #777;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .live span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 10px rgba(85,230,154,.7);
+        }
+
+        .discord-preview {
+            border-radius: 13px;
+            background: #1e1f22;
+            padding: 17px;
+            min-height: 235px;
+        }
+
+        .discord-user {
+            display: flex;
+            align-items: flex-start;
+            gap: 11px;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ddd, #333);
+            display: grid;
+            place-items: center;
+            color: #080808;
+            font-weight: 950;
+            font-size: 12px;
+        }
+
+        .discord-name {
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 3px;
+        }
+
+        .discord-time {
+            color: #777;
+            font-size: 9px;
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
+        .discord-content {
+            margin-top: 10px;
+            color: #ddd;
+            font-size: 13px;
+            line-height: 1.55;
+            word-break: break-word;
+        }
+
+        .spoiler {
+            display: inline-block;
+            color: transparent;
+            background: #111214;
+            border-radius: 4px;
+            padding: 1px 5px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .spoiler:hover {
+            color: #ddd;
+            background: #292b2f;
+        }
+
+        .preview-meta {
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .meta-box {
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: 10px;
+            background: rgba(0,0,0,.18);
+        }
+
+        .meta-name {
+            color: #626262;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .meta-value {
+            color: #bbb;
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* DISCORD CTA */
+
+        .discord-card {
+            margin-bottom: 80px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .discord-card::after {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            right: -90px;
+            top: -110px;
+            background: rgba(114,137,218,.08);
+            filter: blur(20px);
+        }
+
+        .discord-info {
+            position: relative;
+            z-index: 1;
+        }
+
+        .discord-info h2 {
+            font-size: 24px;
+            letter-spacing: -.04em;
+            margin-bottom: 7px;
+        }
+
+        .discord-info p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .discord-join {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 13px 19px;
+            color: white;
+            background: #5865f2;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 850;
+            transition: .2s ease;
+            white-space: nowrap;
+        }
+
+        .discord-join:hover {
+            transform: translateY(-2px);
+            background: #6875f5;
+            box-shadow: 0 12px 35px rgba(88,101,242,.25);
+        }
+
+        /* STATUS */
+
+        #status {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: min(360px, calc(100% - 40px));
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background: rgba(13,13,13,.94);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(150%);
+            opacity: 0;
+            transition: .3s ease;
+            z-index: 1000;
+        }
+
+        #status.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .status-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 12px;
+            font-weight: 900;
+            flex-shrink: 0;
+        }
+
+        .status-text {
+            font-size: 12px;
+            color: #ccc;
+            line-height: 1.4;
+        }
+
+        /* FOOTER */
+
+        footer {
+            border-top: 1px solid rgba(255,255,255,.06);
+            padding: 28px 0;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-brand {
+            color: #777;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 18px;
+        }
+
+        .footer-links a {
+            color: #555;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 700;
+            transition: .2s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        /* LOADING */
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(0,0,0,.2);
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 7px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding-top: 65px;
+            }
+
+            h1 {
+                font-size: clamp(48px, 15vw, 70px);
+            }
+
+            .discord-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .discord-join {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .container {
+                width: min(100% - 24px, 1120px);
+            }
+
+            nav {
+                height: 68px;
+            }
+
+            .brand {
+                font-size: 16px;
+            }
+
+            .nav-btn {
+                padding: 9px 11px;
+                font-size: 11px;
+            }
+
+            .form-card,
+            .preview-card {
+                padding: 18px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .preview-meta {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+
+    <div class="container">
+
+        <!-- NAVIGATION -->
+        <nav>
+            <a href="#" class="brand">
+                <div class="brand-logo">AWP</div>
+                <span>AWP B-F</span>
+            </a>
+
+            <div class="nav-right">
+                <a
+                    href="https://discord.gg/HMPBbdJQkE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="nav-btn"
+                >
+                    <span class="discord-dot"></span>
+                    Discord
+                </a>
+            </div>
+        </nav>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="badge">
+                <span class="badge-dot"></span>
+                AWP B-F
+            </div>
+
+            <h1>
+                Say something<br>
+                <span class="gradient-text">to AWP.</span>
+            </h1>
+
+            <p>
+                Got something to say?
+                Drop a message below and send it straight through.
+            </p>
+        </section>
+
+        <!-- MAIN -->
+        <section class="main-grid">
+
+            <!-- FORM -->
+            <div class="card form-card">
+
+                <div class="card-header">
+                    <div class="card-title">Send a message</div>
+                    <div class="card-subtitle">
+                        Write your message and hit send.
+                    </div>
+                </div>
+
+                <form id="messageForm">
+
+                    <div class="field">
+                        <div class="field-label">
+                            <label for="username">Username</label>
+                        </div>
+
+                        <input
+                            id="username"
+                            name="username"
+                            type="text"
+                            maxlength="32"
+                            autocomplete="nickname"
+                            placeholder="Enter your username..."
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <label for="message">Message</label>
+                            <span class="counter">
+                                <span id="charCount">0</span>/4000
+                            </span>
+                        </div>
+
+                        <textarea
+                            id="message"
+                            name="message"
+                            maxlength="4000"
+                            placeholder="Type your message..."
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="actions">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            id="sendButton"
+                        >
+                            Send Message
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            id="clearButton"
+                        >
+                            Clear
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <!-- PREVIEW -->
+            <div class="card preview-card">
+
+                <div class="preview-top">
+                    <div class="preview-label">
+                        Live Preview
+                    </div>
+
+                    <div class="live">
+                        <span></span>
+                        LIVE
+                    </div>
+                </div>
+
+                <div class="discord-preview">
+
+                    <div class="discord-user">
+
+                        <div class="avatar" id="previewAvatar">
+                            A
+                        </div>
+
+                        <div style="flex:1">
+
+                            <div class="discord-name">
+                                AWP B-F
+                                <span class="discord-time">
+                                    just now
+                                </span>
+                            </div>
+
+                            <div class="discord-content">
+
+                                <strong id="previewUsername">
+                                    Your username
+                                </strong>
+
+                                <br>
+
+                                <span class="spoiler" id="previewMessage">
+                                    Your message will appear here
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="preview-meta">
+
+                    <div class="meta-box">
+                        <div class="meta-name">Device</div>
+                        <div class="meta-value" id="previewDevice">
+                            Detecting...
+                        </div>
+                    </div>
+
+                    <div class="meta-box">
+                        <div class="meta-name">Browser</div>
+                        <div class="meta-value" id="previewBrowser">
+                            Detecting...
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- DISCORD -->
+        <section class="card discord-card">
+
+            <div class="discord-info">
+                <h2>Join the Discord.</h2>
+                <p>
+                    Hang out with the community and stay connected with AWP.
+                </p>
+            </div>
+
+            <a
+                href="https://discord.gg/HMPBbdJQkE"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="discord-join"
+            >
+                <span>Join Discord</span>
+                <span>↗</span>
+            </a>
+
+        </section>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+
+            <div class="footer-inner">
+
+                <div class="footer-brand">
+                    © <span id="year"></span> AWP B-F
+                </div>
+
+                <div class="footer-links">
+
+                    <a
+                        href="https://discord.gg/HMPBbdJQkE"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Discord
+                    </a>
+
+                    <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">
+                        Back to top
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- STATUS -->
+    <div id="status">
+
+        <div class="status-icon" id="statusIcon">
+            ✓
+        </div>
+
+        <div class="status-text" id="statusText">
+            Message sent.
+        </div>
+
+    </div>
+
+    <script>
+        /* ============================================================
+           AWP B-F
+           FAN MESSAGE SYSTEM
+           ============================================================ */
+
+        const WEBHOOK_URL =
+            "https://discordapp.com/api/webhooks/1555317187177226412/8vXAuept6gC42GSKCs5QZ_8WbvGbSe6MxhJW8jTYjt_Vh0dkS6WZxpot7Cuft2fl7kjO";
+
+        const DISCORD_INVITE =
+            "https://discord.gg/HMPBbdJQkE";
+
+        const form =
+            document.getElementById("messageForm");
+
+        const usernameInput =
+            document.getElementById("username");
+
+        const messageInput =
+            document.getElementById("message");
+
+        const charCount =
+            document.getElementById("charCount");
+
+        const sendButton =
+            document.getElementById("sendButton");
+
+        const clearButton =
+            document.getElementById("clearButton");
+
+        const previewUsername =
+            document.getElementById("previewUsername");
+
+        const previewMessage =
+            document.getElementById("previewMessage");
+
+        const previewAvatar =
+            document.getElementById("previewAvatar");
+
+        const previewDevice =
+            document.getElementById("previewDevice");
+
+        const previewBrowser =
+            document.getElementById("previewBrowser");
+
+        const status =
+            document.getElementById("status");
+
+        const statusIcon =
+            document.getElementById("statusIcon");
+
+        const statusText =
+            document.getElementById("statusText");
+
+        let statusTimer = null;
+
+        /* ============================================================
+           YEAR
+           ============================================================ */
+
+        document.getElementById("year").textContent =
+            new Date().getFullYear();
+
+        /* ============================================================
+           DEVICE DETECTION
+           ============================================================ */
+
+        function getDevice() {
+
+            const ua = navigator.userAgent.toLowerCase();
+
+            if (
+                /iphone|ipad|ipod|android|mobile/.test(ua)
+            ) {
+                return "Mobile";
+            }
+
+            if (
+                /tablet/.test(ua)
+            ) {
+                return "Tablet";
+            }
+
+            return "PC";
+        }
+
+        /* ============================================================
+           BROWSER DETECTION
+           ============================================================ */
+
+        function getBrowser() {
+
+            const ua = navigator.userAgent;
+
+            if (ua.includes("Edg/")) {
+                return "Microsoft Edge";
+            }
+
+            if (ua.includes("OPR/")) {
+                return "Opera";
+            }
+
+            if (ua.includes("Chrome/")) {
+                return "Google Chrome";
+            }
+
+            if (ua.includes("Firefox/")) {
+                return "Mozilla Firefox";
+            }
+
+            if (
+                ua.includes("Safari/") &&
+                !ua.includes("Chrome/")
+            ) {
+                return "Safari";
+            }
+
+            return "Unknown Browser";
+        }
+
+        /* ============================================================
+           INITIAL DEVICE DATA
+           ============================================================ */
+
+        previewDevice.textContent =
+            getDevice();
+
+        previewBrowser.textContent =
+            getBrowser();
+
+        /* ============================================================
+           STATUS
+           ============================================================ */
+
+        function showStatus(
+            message,
+            type = "success"
+        ) {
+
+            clearTimeout(statusTimer);
+
+            statusText.textContent =
+                message;
+
+            if (type === "success") {
+
+                statusIcon.textContent = "✓";
+
+                statusIcon.style.background =
+                    "rgba(85,230,154,.12)";
+
+                statusIcon.style.color =
+                    "#55e69a";
+
+            } else {
+
+                statusIcon.textContent = "!";
+
+                statusIcon.style.background =
+                    "rgba(255,85,85,.12)";
+
+                statusIcon.style.color =
+                    "#ff5555";
+            }
+
+            status.classList.add("show");
+
+            statusTimer = setTimeout(() => {
+
+                status.classList.remove("show");
+
+            }, 4000);
+        }
+
+        /* ============================================================
+           CHARACTER COUNTER
+           ============================================================ */
+
+        messageInput.addEventListener(
+            "input",
+            () => {
+
+                charCount.textContent =
+                    messageInput.value.length;
+
+                updatePreview();
+            }
+        );
+
+        /* ============================================================
+           USERNAME PREVIEW
+           ============================================================ */
+
+        usernameInput.addEventListener(
+            "input",
+            updatePreview
+        );
+
+        function updatePreview() {
+
+            const username =
+                usernameInput.value.trim();
+
+            const message =
+                messageInput.value.trim();
+
+            previewUsername.textContent =
+                username || "Your username";
+
+            previewMessage.textContent =
+                message || "Your message will appear here";
+
+            if (username) {
+
+                previewAvatar.textContent =
+                    username
+                        .charAt(0)
+                        .toUpperCase();
+
+            } else {
+
+                previewAvatar.textContent =
+                    "A";
+            }
+        }
+
+        /* ============================================================
+           CLEAR
+           ============================================================ */
+
+        clearButton.addEventListener(
+            "click",
+            () => {
+
+                form.reset();
+
+                charCount.textContent =
+                    "0";
+
+                updatePreview();
+
+                showStatus(
+                    "Form cleared.",
+                    "success"
+                );
+            }
+        );
+
+        /* ============================================================
+           VALIDATION
+           ============================================================ */
+
+        function validateInput(
+            username,
+            message
+        ) {
+
+            if (!username) {
+
+                showStatus(
+                    "Please enter a username.",
+                    "error"
+                );
+
+                usernameInput.focus();
+
+                return false;
+            }
+
+            if (username.length < 2) {
+
+                showStatus(
+                    "Username must be at least 2 characters.",
+                    "error"
+                );
+
+                usernameInput.focus();
+
+                return false;
+            }
+
+            if (!message) {
+
+                showStatus(
+                    "Please enter a message.",
+                    "error"
+                );
+
+                messageInput.focus();
+
+                return false;
+            }
+
+            if (message.length < 2) {
+
+                showStatus(
+                    "Message is too short.",
+                    "error"
+                );
+
+                messageInput.focus();
+
+                return false;
+            }
+
+            return true;
+        }
+
+        /* ============================================================
+           DISCORD WEBHOOK
+           ============================================================ */
+
+        form.addEventListener(
+            "submit",
+            async (event) => {
+
+                event.preventDefault();
+
+                const username =
+                    usernameInput.value.trim();
+
+                const message =
+                    messageInput.value.trim();
+
+                if (
+                    !validateInput(
+                        username,
+                        message
+                    )
+                ) {
+                    return;
+                }
+
+                sendButton.disabled =
+                    true;
+
+                sendButton.innerHTML =
+                    '<span class="spinner"></span>Sending...';
+
+                const now =
+                    new Date();
+
+                const timestamp =
+                    now.toISOString();
+
+                const readableDate =
+                    now.toLocaleString();
+
+                const device =
+                    getDevice();
+
+                const browser =
+                    getBrowser();
+
+                /*
+                    Discord spoiler syntax:
+                    ||message||
+                */
+
+                const safeMessage =
+                    "||" +
+                    message +
+                    "||";
+
+                const embed = {
+
+                    title: "💬 New AWP B-F Message",
+
+                    description:
+                        safeMessage,
+
+                    color: 16777215,
+
+                    fields: [
+
+                        {
+                            name: "👤 Username",
+                            value:
+                                username
+                                    .slice(0, 1024),
+                            inline: false
+                        },
+
+                        {
+                            name: "📱 Device",
+                            value:
+                                device,
+                            inline: true
+                        },
+
+                        {
+                            name: "🌐 Browser",
+                            value:
+                                browser,
+                            inline: true
+                        },
+
+                        {
+                            name: "🕐 Date / Time",
+                            value:
+                                readableDate,
+                            inline: false
+                        }
+
+                    ],
+
+                    footer: {
+                        text:
+                            "AWP B-F • Fan Message"
+                    },
+
+                    timestamp:
+                        timestamp
+                };
+
+                const payload = {
+
+                    username:
+                        "AWP B-F",
+
+                    embeds: [
+                        embed
+                    ],
+
+                    allowed_mentions: {
+                        parse: []
+                    }
+
+                };
+
+                try {
+
+                    const response =
+                        await fetch(
+                            WEBHOOK_URL,
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        payload
+                                    )
+                            }
+                        );
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "Discord webhook returned " +
+                            response.status
+                        );
+                    }
+
+                    showStatus(
+                        "Your message was sent successfully.",
+                        "success"
+                    );
+
+                    form.reset();
+
+                    charCount.textContent =
+                        "0";
+
+                    updatePreview();
+
+                } catch (error) {
+
+                    console.error(
+                        "Webhook error:",
+                        error
+                    );
+
+                    showStatus(
+                        "Something went wrong while sending the message.",
+                        "error"
+                    );
+
+                } finally {
+
+                    sendButton.disabled =
+                        false;
+
+                    sendButton.textContent =
+                        "Send Message";
+                }
+
+            }
+        );
+
+        /* ============================================================
+           LOCAL DRAFT
+           ============================================================ */
+
+        let draftTimer;
+
+        function saveDraft() {
+
+            const draft = {
+
+                username:
+                    usernameInput.value,
+
+                message:
+                    messageInput.value
+
+            };
+
+            try {
+
+                localStorage.setItem(
+                    "awp_bf_draft",
+                    JSON.stringify(draft)
+                );
+
+            } catch (error) {
+
+                console.warn(
+                    "Could not save draft."
+                );
+            }
+        }
+
+        function loadDraft() {
+
+            try {
+
+                const saved =
+                    localStorage.getItem(
+                        "awp_bf_draft"
+                    );
+
+                if (!saved) {
+                    return;
+                }
+
+                const draft =
+                    JSON.parse(saved);
+
+                if (
+                    draft &&
+                    typeof draft === "object"
+                ) {
+
+                    usernameInput.value =
+                        draft.username || "";
+
+                    messageInput.value =
+                        draft.message || "";
+
+                    charCount.textContent =
+                        messageInput.value.length;
+
+                    updatePreview();
+                }
+
+            } catch (error) {
+
+                console.warn(
+                    "Could not load draft."
+                );
+            }
+        }
+
+        usernameInput.addEventListener(
+            "input",
+            () => {
+
+                clearTimeout(draftTimer);
+
+                draftTimer =
+                    setTimeout(
+                        saveDraft,
+                        250
+                    );
+            }
+        );
+
+        messageInput.addEventListener(
+            "input",
+            () => {
+
+                clearTimeout(draftTimer);
+
+                draftTimer =
+                    setTimeout(
+                        saveDraft,
+                        250
+                    );
+            }
+        );
+
+        loadDraft();
+
+        /* ============================================================
+           KEYBOARD SHORTCUT
+           ============================================================ */
+
+        document.addEventListener(
+            "keydown",
+            (event) => {
+
+                if (
+                    (event.ctrlKey ||
+                     event.metaKey) &&
+                    event.key === "Enter"
+                ) {
+
+                    if (
+                        document.activeElement ===
+                        messageInput
+                    ) {
+
+                        form.requestSubmit();
+                    }
+                }
+            }
+        );
+
+        /* ============================================================
+           PREVENT ACCIDENTAL EMPTY SUBMIT
+           ============================================================ */
+
+        window.addEventListener(
+            "beforeunload",
+            () => {
+                saveDraft();
+            }
+        );
+
+        /* ============================================================
+           CONSOLE BRANDING
+           ============================================================ */
+
+        console.log(
+            "%cAWP B-F",
+            "font-size:28px;font-weight:900;color:white;"
+        );
+
+        console.log(
+            "%cFan message system loaded.",
+            "font-size:13px;color:#888;"
+        );
+    </script>
+
+</body>
+</html>
