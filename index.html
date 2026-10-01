@@ -1,1021 +1,466 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>AWP B-F</title>
 
     <style>
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --bg: #050505;
-            --card: rgba(15, 15, 18, 0.88);
-            --border: rgba(255,255,255,0.08);
-            --text: #ffffff;
-            --muted: #8e8e98;
-            --accent: #ffffff;
-            --danger: #ff4d67;
+            transition: all 0.2s ease;
         }
 
         body {
+            margin: 0;
             min-height: 100vh;
-            background:
-                radial-gradient(circle at 20% 15%, rgba(255,255,255,0.055), transparent 30%),
-                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.04), transparent 35%),
-                #050505;
-            color: var(--text);
-            font-family: Arial, Helvetica, sans-serif;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            opacity: .15;
-            background-image:
-                linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-            background-size: 45px 45px;
-        }
-
-        .orb {
-            position: fixed;
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: .12;
-            pointer-events: none;
-        }
-
-        .orb.one {
-            background: white;
-            top: -120px;
-            left: -100px;
-        }
-
-        .orb.two {
-            background: #777;
-            right: -120px;
-            bottom: -100px;
-        }
-
-        header {
-            width: 100%;
-            padding: 24px 7%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-            z-index: 2;
-        }
-
-        .logo {
-            font-size: 22px;
-            font-weight: 900;
-            letter-spacing: -1px;
-        }
-
-        .logo span {
-            color: #888;
-        }
-
-        .discord {
-            text-decoration: none;
-            color: #fff;
-            border: 1px solid var(--border);
-            background: rgba(255,255,255,.045);
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 700;
-            transition: .2s;
-        }
-
-        .discord:hover {
-            background: rgba(255,255,255,.1);
-            transform: translateY(-1px);
-        }
-
-        main {
-            width: min(680px, 92%);
-            margin: 70px auto 100px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero {
-            text-align: center;
-            margin-bottom: 34px;
-        }
-
-        .hero h1 {
-            font-size: clamp(42px, 8vw, 72px);
-            letter-spacing: -4px;
-            line-height: .95;
-            font-weight: 950;
-        }
-
-        .hero p {
-            color: var(--muted);
-            margin-top: 16px;
-            font-size: 15px;
-        }
-
-        .steps {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 25px;
+            background: radial-gradient(circle at top right, #1a1a2e, #050505 60%);
+            color: #e2e8f0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        .step {
-            display: flex;
-            align-items: center;
-            color: #555;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .step.active {
-            color: #fff;
-        }
-
-        .circle {
-            width: 27px;
-            height: 27px;
-            display: grid;
-            place-items: center;
+        /* Subtle glowing background aura */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.03);
             border-radius: 50%;
-            background: #151515;
-            border: 1px solid #292929;
-            margin-right: 7px;
-            font-size: 11px;
+            top: 15%;
+            left: 20%;
+            filter: blur(80px);
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .step.active .circle {
-            background: #fff;
-            color: #000;
-            border-color: #fff;
+        .box {
+            position: relative;
+            z-index: 1;
+            width: 90%;
+            max-width: 460px;
+            background: rgba(16, 16, 18, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
         }
 
-        .line {
-            width: 45px;
-            height: 1px;
-            background: #252525;
-            margin: 0 13px;
+        h1 {
+            margin-top: 0;
+            margin-bottom: 24px;
+            text-align: center;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 30%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 22px;
-            padding: 27px;
-            backdrop-filter: blur(18px);
-            box-shadow: 0 30px 90px rgba(0,0,0,.35);
+        form {
+            display: flex;
+            flex-direction: column;
         }
 
-        .step-content {
-            animation: fade .3s ease;
+        .input-group {
+            margin-bottom: 18px;
+            position: relative;
         }
 
-        @keyframes fade {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .label {
+        label {
             display: block;
             font-size: 12px;
-            font-weight: 800;
-            color: #aaa;
-            margin-bottom: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            margin-bottom: 6px;
         }
 
         input,
         textarea {
             width: 100%;
-            border: 1px solid #242428;
-            outline: none;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(8, 8, 10, 0.6);
             color: white;
-            background: #0b0b0d;
-            border-radius: 13px;
-            padding: 14px 15px;
+            outline: none;
             font-size: 14px;
-            transition: .2s;
+            font-family: inherit;
+        }
+
+        input:hover,
+        textarea:hover {
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
         input:focus,
         textarea:focus {
-            border-color: #666;
-            background: #0e0e10;
+            border-color: #ffffff;
+            background: rgba(12, 12, 15, 0.9);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
         }
 
         textarea {
-            min-height: 190px;
+            min-height: 120px;
             resize: vertical;
-            line-height: 1.5;
         }
 
-        .field {
-            margin-bottom: 21px;
-        }
-
-        .counter {
-            text-align: right;
-            margin-top: 6px;
-            color: #555;
-            font-size: 11px;
-        }
-
-        .button {
+        button {
             width: 100%;
-            border: 0;
-            border-radius: 13px;
+            margin-top: 8px;
             padding: 15px;
-            background: #fff;
-            color: #000;
-            font-size: 14px;
-            font-weight: 900;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+            color: #050505;
+            font-weight: 600;
+            font-size: 15px;
             cursor: pointer;
-            transition: .2s;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
         }
 
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255,255,255,.08);
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
+            background: #ffffff;
         }
 
-        .button:active {
+        button:active:not(:disabled) {
             transform: translateY(0);
         }
 
-        .button:disabled {
-            opacity: .55;
+        button:disabled {
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
+            transform: none !important;
+            box-shadow: none !important;
         }
 
-        .hint {
-            margin-top: 13px;
+        #status {
             text-align: center;
-            color: #555;
-            font-size: 11px;
-        }
-
-        .preview {
-            margin-top: 25px;
-            border: 1px solid #202024;
-            border-radius: 15px;
-            padding: 17px;
-            background: #09090b;
-        }
-
-        .preview-title {
-            color: #666;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 14px;
-        }
-
-        .preview-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 9px;
-            font-size: 13px;
-        }
-
-        .preview-row span:first-child {
-            color: #666;
-        }
-
-        .preview-row span:last-child {
-            color: #ddd;
-            text-align: right;
-            word-break: break-word;
-        }
-
-        .message-preview {
-            margin-top: 13px;
-            padding: 12px;
-            border-radius: 10px;
-            background: #101013;
-            color: #777;
-            font-size: 13px;
-            line-height: 1.45;
-            cursor: pointer;
-            user-select: none;
-            filter: blur(7px);
-            transition: .2s;
-        }
-
-        .message-preview.revealed {
-            filter: none;
-            color: #ddd;
-        }
-
-        .spoiler-note {
-            color: #555;
-            font-size: 10px;
-            margin-top: 7px;
-        }
-
-        .followers-box {
-            text-align: center;
-            padding: 15px 0 8px;
-        }
-
-        .followers-box h2 {
-            font-size: 28px;
-            letter-spacing: -1px;
-            margin-bottom: 8px;
-        }
-
-        .followers-box p {
-            color: #777;
+            margin-top: 20px;
+            color: #94a3b8;
             font-size: 13px;
             line-height: 1.5;
-            margin-bottom: 25px;
         }
 
-        .followers-input {
-            font-size: 22px;
-            text-align: center;
-            font-weight: 800;
+        /* Success state styling when triggered */
+        .success-box {
+            animation: fadeIn 0.4s ease forwards;
         }
 
-        .wait {
-            text-align: center;
-            padding: 32px 8px 25px;
-        }
-
-        .check {
-            width: 68px;
-            height: 68px;
-            border-radius: 50%;
-            border: 1px solid #333;
-            display: grid;
-            place-items: center;
-            margin: 0 auto 23px;
-            font-size: 27px;
-        }
-
-        .wait h2 {
-            font-size: 29px;
-            letter-spacing: -1px;
-            margin-bottom: 12px;
-        }
-
-        .wait p {
-            max-width: 430px;
-            margin: auto;
-            color: #777;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        .wait .small {
-            margin-top: 18px;
-            color: #555;
-            font-size: 11px;
-        }
-
-        .toast {
-            position: fixed;
-            left: 50%;
-            bottom: 25px;
-            transform: translate(-50%, 20px);
-            opacity: 0;
-            pointer-events: none;
-            background: #fff;
-            color: #000;
-            padding: 12px 17px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 800;
-            transition: .25s;
-            z-index: 20;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translate(-50%, 0);
-        }
-
-        @media (max-width: 600px) {
-            header {
-                padding: 20px;
-            }
-
-            main {
-                margin-top: 45px;
-            }
-
-            .card {
-                padding: 20px;
-                border-radius: 18px;
-            }
-
-            .hero h1 {
-                letter-spacing: -3px;
-            }
-
-            .line {
-                width: 25px;
-                margin: 0 8px;
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="orb one"></div>
-    <div class="orb two"></div>
+<div class="box">
 
-    <header>
-        <div class="logo">AWP <span>B-F</span></div>
+    <h1>AWP B-F</h1>
 
-        <a
-            class="discord"
-            href="https://discord.gg/HMPBbdJQkE"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            Discord
-        </a>
-    </header>
+    <form
+        id="webhookForm"
+        target="webhookFrame"
+        method="POST"
+        enctype="multipart/form-data"
+    >
 
-    <main>
-
-        <section class="hero">
-            <h1>AWP B-F</h1>
-            <p>Send a message to the AWP community.</p>
-        </section>
-
-        <div class="steps">
-
-            <div class="step active" id="stepOneIndicator">
-                <div class="circle">1</div>
-                Message
-            </div>
-
-            <div class="line"></div>
-
-            <div class="step" id="stepTwoIndicator">
-                <div class="circle">2</div>
-                Followers
-            </div>
-
-            <div class="line"></div>
-
-            <div class="step" id="stepThreeIndicator">
-                <div class="circle">3</div>
-                Done
-            </div>
-
+        <div class="input-group">
+            <label for="username">Username</label>
+            <input
+                id="username"
+                type="text"
+                placeholder="Enter username"
+                maxlength="32"
+                required
+            >
         </div>
 
-        <div class="card">
-
-            <!-- STEP 1 -->
-            <div class="step-content" id="messageStep">
-
-                <div class="field">
-                    <label class="label" for="username">
-                        Username
-                    </label>
-
-                    <input
-                        id="username"
-                        type="text"
-                        maxlength="32"
-                        placeholder="Enter your username"
-                        autocomplete="off"
-                    >
-                </div>
-
-                <div class="field">
-                    <label class="label" for="message">
-                        Message
-                    </label>
-
-                    <textarea
-                        id="message"
-                        maxlength="3000"
-                        placeholder="Write your message..."
-                    ></textarea>
-
-                    <div class="counter">
-                        <span id="counter">0</span>/3000
-                    </div>
-                </div>
-
-                <button class="button" id="messageContinue">
-                    Continue
-                </button>
-
-                <div class="hint">
-                    Your message will be sent privately to the AWP B-F system.
-                </div>
-
-                <div class="preview">
-
-                    <div class="preview-title">
-                        Preview
-                    </div>
-
-                    <div class="preview-row">
-                        <span>Username</span>
-                        <span id="previewUsername">—</span>
-                    </div>
-
-                    <div class="preview-row">
-                        <span>Followers</span>
-                        <span>—</span>
-                    </div>
-
-                    <div
-                        class="message-preview"
-                        id="previewMessage"
-                        title="Click to reveal"
-                    >
-                        Your message will appear here.
-                    </div>
-
-                    <div class="spoiler-note">
-                        Click the message to reveal/hide it.
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- STEP 2 -->
-            <div
-                class="step-content"
-                id="followerStep"
-                style="display:none;"
-            >
-
-                <div class="followers-box">
-
-                    <h2>How many followers?</h2>
-
-                    <p>
-                        Enter the amount you want to request.
-                        The maximum is 10,000.
-                    </p>
-
-                    <div class="field">
-
-                        <input
-                            class="followers-input"
-                            id="followers"
-                            type="number"
-                            min="1"
-                            max="10000"
-                            placeholder="1000"
-                        >
-
-                    </div>
-
-                    <button class="button" id="submitButton">
-                        Continue
-                    </button>
-
-                    <div class="hint">
-                        Maximum: 10,000 followers
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- STEP 3 -->
-            <div
-                class="step-content"
-                id="waitStep"
-                style="display:none;"
-            >
-
-                <div class="wait">
-
-                    <div class="check">
-                        ✓
-                    </div>
-
-                    <h2>Request submitted</h2>
-
-                    <p>
-                        Please allow 10 or more minutes for the next
-                        step to process. Keep an eye on the Discord
-                        server for further information.
-                    </p>
-
-                    <div class="small">
-                        AWP B-F
-                    </div>
-
-                </div>
-
-            </div>
-
+        <div class="input-group">
+            <label for="message">Message</label>
+            <textarea
+                id="message"
+                placeholder="Enter your message..."
+                maxlength="3000"
+                required
+            ></textarea>
         </div>
 
-    </main>
+        <div class="input-group">
+            <label for="followers">Followers</label>
+            <input
+                id="followers"
+                type="number"
+                placeholder="1 - 10,000"
+                min="1"
+                max="10000"
+                required
+            >
+        </div>
 
-    <div class="toast" id="toast"></div>
+        <button id="submitButton" type="submit">
+            Submit Request
+        </button>
 
-    <script>
+    </form>
 
-        /*
-         * IMPORTANT:
-         * A webhook placed in frontend HTML is publicly visible.
-         * Regenerate this webhook if it becomes exposed or abused.
-         */
+    <iframe
+        name="webhookFrame"
+        style="display:none"
+    ></iframe>
 
-        const WEBHOOK_URL =
-            "https://discord.com/api/webhooks/1555317187177226412/8vXAuept6gC42GSKCs5QZ_8WbvGbSe6MxhJW8jTYjt_Vh0dkS6WZxpot7Cuft2fl7kjO";
+    <div id="status"></div>
 
-        const usernameInput = document.getElementById("username");
-        const messageInput = document.getElementById("message");
-        const followersInput = document.getElementById("followers");
+</div>
 
-        const counter = document.getElementById("counter");
+<script>
 
-        const previewUsername =
-            document.getElementById("previewUsername");
+const WEBHOOK_URL =
+    "https://discordapp.com/api/webhooks/1555317187177226412/8vXAuept6gC42GSKCs5QZ_8WbvGbSe6MxhJW8jTYjt_Vh0dkS6WZxpot7Cuft2fl7kjO";
 
-        const previewMessage =
-            document.getElementById("previewMessage");
 
-        const messageStep =
-            document.getElementById("messageStep");
+const form =
+    document.getElementById("webhookForm");
 
-        const followerStep =
-            document.getElementById("followerStep");
+const username =
+    document.getElementById("username");
 
-        const waitStep =
-            document.getElementById("waitStep");
+const message =
+    document.getElementById("message");
 
-        const messageContinue =
-            document.getElementById("messageContinue");
+const followers =
+    document.getElementById("followers");
 
-        const submitButton =
-            document.getElementById("submitButton");
+const button =
+    document.getElementById("submitButton");
 
-        const toast =
-            document.getElementById("toast");
+const status =
+    document.getElementById("status");
 
 
-        function showToast(text) {
-            toast.textContent = text;
-            toast.classList.add("show");
+form.addEventListener("submit", function(event) {
 
-            setTimeout(() => {
-                toast.classList.remove("show");
-            }, 2500);
-        }
+    event.preventDefault();
 
+    const user =
+        username.value.trim();
 
-        function escapeHTML(value) {
-            return value
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll('"', "&quot;")
-                .replaceAll("'", "&#039;");
-        }
+    const msg =
+        message.value.trim();
 
+    const amount =
+        Number(followers.value);
 
-        function updatePreview() {
 
-            const username =
-                usernameInput.value.trim();
+    if (!user || !msg) {
+        status.textContent =
+            "Fill in all fields.";
+        return;
+    }
 
-            const message =
-                messageInput.value.trim();
 
-            previewUsername.textContent =
-                username || "—";
+    if (
+        amount < 1 ||
+        amount > 10000
+    ) {
+        status.textContent =
+            "Followers must be between 1 and 10,000.";
+        return;
+    }
 
-            if (message) {
-                previewMessage.innerHTML =
-                    escapeHTML(message).replace(/\n/g, "<br>");
-            } else {
-                previewMessage.textContent =
-                    "Your message will appear here.";
-            }
-        }
 
+    /*
+        Build Discord webhook payload.
+    */
 
-        messageInput.addEventListener("input", () => {
+    const payload = {
 
-            counter.textContent =
-                messageInput.value.length;
+        username: "AWP B-F",
 
-            updatePreview();
+        embeds: [
 
-        });
+            {
 
+                title: "New AWP B-F Request",
 
-        usernameInput.addEventListener("input", updatePreview);
+                color: 16777215,
 
+                fields: [
 
-        previewMessage.addEventListener("click", () => {
-
-            if (
-                !messageInput.value.trim()
-            ) {
-                return;
-            }
-
-            previewMessage.classList.toggle("revealed");
-
-        });
-
-
-        messageContinue.addEventListener("click", () => {
-
-            const username =
-                usernameInput.value.trim();
-
-            const message =
-                messageInput.value.trim();
-
-            if (!username) {
-                showToast("Enter your username.");
-                usernameInput.focus();
-                return;
-            }
-
-            if (username.length < 2) {
-                showToast("Username is too short.");
-                usernameInput.focus();
-                return;
-            }
-
-            if (!message) {
-                showToast("Enter a message.");
-                messageInput.focus();
-                return;
-            }
-
-            if (message.length > 3000) {
-                showToast("Message is too long.");
-                return;
-            }
-
-            messageStep.style.display = "none";
-            followerStep.style.display = "block";
-
-            document
-                .getElementById("stepOneIndicator")
-                .classList.remove("active");
-
-            document
-                .getElementById("stepTwoIndicator")
-                .classList.add("active");
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-
-        });
-
-
-        submitButton.addEventListener("click", async () => {
-
-            const username =
-                usernameInput.value.trim();
-
-            const message =
-                messageInput.value.trim();
-
-            const followers =
-                Number(followersInput.value);
-
-
-            if (!Number.isInteger(followers)) {
-                showToast("Enter a valid follower amount.");
-                followersInput.focus();
-                return;
-            }
-
-            if (followers < 1 || followers > 10000) {
-                showToast("Followers must be between 1 and 10,000.");
-                followersInput.focus();
-                return;
-            }
-
-
-            submitButton.disabled = true;
-            submitButton.textContent = "Submitting...";
-
-
-            const device =
-                /Mobi|Android|iPhone|iPad|iPod/i.test(
-                    navigator.userAgent
-                )
-                    ? "Mobile"
-                    : "PC";
-
-
-            const browser =
-                getBrowser();
-
-
-            const now =
-                new Date();
-
-
-            const timestamp =
-                now.toLocaleString();
-
-
-            const payload = {
-
-                username: "AWP B-F",
-
-                embeds: [
                     {
-                        title: "New AWP B-F Request",
+                        name: "Username",
+                        value: user,
+                        inline: true
+                    },
 
-                        color: 16777215,
-
-                        fields: [
-
-                            {
-                                name: "Username",
-                                value: username,
-                                inline: true
-                            },
-
-                            {
-                                name: "Followers",
-                                value: String(followers),
-                                inline: true
-                            },
-
-                            {
-                                name: "Device",
-                                value: device,
-                                inline: true
-                            },
-
-                            {
-                                name: "Browser",
-                                value: browser,
-                                inline: true
-                            },
-
-                            {
-                                name: "Date / Time",
-                                value: timestamp,
-                                inline: false
-                            }
-
-                        ],
-
-                        description:
-                            `**Message:**\n||${message}||`,
-
-                        footer: {
-                            text: "AWP B-F"
-                        },
-
-                        timestamp:
-                            now.toISOString()
-                    }
-                ]
-
-            };
-
-
-            try {
-
-                /*
-                 * no-cors prevents the browser from blocking the
-                 * request because the webhook does not provide the
-                 * CORS response headers needed by normal fetch().
-                 *
-                 * The browser cannot read the response in no-cors,
-                 * so we treat a completed fetch as submitted.
-                 */
-
-                await fetch(
-                    WEBHOOK_URL,
                     {
-                        method: "POST",
+                        name: "Followers",
+                        value: String(amount),
+                        inline: true
+                    },
 
-                        mode: "no-cors",
+                    {
+                        name: "Device",
+                        value:
+                            /Mobi|Android|iPhone|iPad/i.test(
+                                navigator.userAgent
+                            )
+                            ? "Mobile"
+                            : "PC",
+                        inline: true
+                    },
 
-                        headers: {
-                            "Content-Type":
-                                "text/plain;charset=UTF-8"
-                        },
+                    {
+                        name: "Browser",
+                        value: getBrowser(),
+                        inline: true
+                    },
 
-                        body:
-                            JSON.stringify(payload)
+                    {
+                        name: "Date / Time",
+                        value:
+                            new Date().toLocaleString(),
+                        inline: false
                     }
-                );
 
+                ],
 
-                followerStep.style.display = "none";
-                waitStep.style.display = "block";
+                description:
+                    "**Message:**\n||" +
+                    msg +
+                    "||",
 
+                footer: {
+                    text: "AWP B-F"
+                },
 
-                document
-                    .getElementById("stepTwoIndicator")
-                    .classList.remove("active");
-
-                document
-                    .getElementById("stepThreeIndicator")
-                    .classList.add("active");
-
-
-                window.scrollTo({
-                    top: 0,
-                    behavior: "smooth"
-                });
-
-
-            } catch (error) {
-
-                console.error(
-                    "Webhook error:",
-                    error
-                );
-
-                showToast(
-                    "Could not send the request. Try again."
-                );
-
-            } finally {
-
-                submitButton.disabled = false;
-                submitButton.textContent = "Continue";
+                timestamp:
+                    new Date().toISOString()
 
             }
 
-        });
+        ]
+
+    };
 
 
-        function getBrowser() {
+    /*
+        Create a temporary form specifically
+        for Discord's webhook endpoint.
+    */
 
-            const ua =
-                navigator.userAgent;
+    const discordForm =
+        document.createElement("form");
 
-            if (ua.includes("Edg/")) {
-                return "Microsoft Edge";
-            }
+    discordForm.method = "POST";
 
-            if (ua.includes("OPR/")) {
-                return "Opera";
-            }
+    discordForm.action =
+        WEBHOOK_URL;
 
-            if (ua.includes("Chrome/")) {
-                return "Google Chrome";
-            }
+    discordForm.target =
+        "webhookFrame";
 
-            if (ua.includes("Firefox/")) {
-                return "Mozilla Firefox";
-            }
-
-            if (
-                ua.includes("Safari/") &&
-                !ua.includes("Chrome/")
-            ) {
-                return "Safari";
-            }
-
-            return "Unknown";
-
-        }
+    discordForm.enctype =
+        "multipart/form-data";
 
 
-        updatePreview();
+    const payloadInput =
+        document.createElement("input");
 
-    </script>
+    payloadInput.type = "hidden";
+
+    payloadInput.name =
+        "payload_json";
+
+    payloadInput.value =
+        JSON.stringify(payload);
+
+
+    discordForm.appendChild(
+        payloadInput
+    );
+
+    document.body.appendChild(
+        discordForm
+    );
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Sending...";
+
+    status.textContent =
+        "Submitting request...";
+
+
+    discordForm.submit();
+
+
+    /*
+        We can't read Discord's response because
+        this is a cross-origin form submission.
+
+        Wait briefly, then show the next screen.
+    */
+
+    setTimeout(() => {
+
+        discordForm.remove();
+
+        form.style.display =
+            "none";
+
+        status.innerHTML =
+            "✓ Request submitted.<br><br>" +
+            "Please allow 10 or more minutes for the next step.";
+
+    }, 1500);
+
+});
+
+
+function getBrowser() {
+
+    const ua =
+        navigator.userAgent;
+
+    if (ua.includes("Edg/"))
+        return "Microsoft Edge";
+
+    if (ua.includes("OPR/"))
+        return "Opera";
+
+    if (ua.includes("Chrome/"))
+        return "Google Chrome";
+
+    if (ua.includes("Firefox/"))
+        return "Firefox";
+
+    if (
+        ua.includes("Safari/") &&
+        !ua.includes("Chrome/")
+    )
+        return "Safari";
+
+    return "Unknown";
+}
+
+</script>
 
 </body>
 </html>
